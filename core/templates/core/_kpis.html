@@ -1,0 +1,9 @@
+<div class="kpis">
+  {% for k in lista %}
+  <div class="kpi">
+    <div class="t">{{ k.titulo }}</div>
+    <div class="v">{{ k.valor }}</div>
+    <div class="d {{ k.tono }}">{% if k.delta %}{{ k.flecha }} {{ k.delta }} vs. semana anterior{% else %}&nbsp;{% endif %}</div>
+  </div>
+  {% endfor %}
+</div>

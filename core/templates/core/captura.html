@@ -1,0 +1,97 @@
+{% extends "core/base.html" %}
+{% block title %}Capturar {{ cfg.titulo }}{% endblock %}
+{% block estilos %}<style>
+.encabezado{margin-bottom:24px;max-width:760px}
+.encabezado h1{font:700 36px/1.05 var(--cond);margin:0 0 8px}
+.encabezado p{margin:0;color:var(--tenue)}
+.plazo{display:inline-block;margin-top:14px;padding:8px 14px;border-radius:8px;background:#fff;border:1px solid var(--linea);font-weight:500}
+.plazo.vencido{border-color:var(--vencido);color:var(--vencido)}
+.seccion{background:#fff;border:1px solid var(--linea);border-radius:12px;padding:22px 24px;margin-bottom:16px;max-width:760px}
+.seccion h2{font:600 22px/1.2 var(--cond);margin:0 0 2px}
+.seccion .ayuda{color:var(--tenue);margin:0 0 14px;font-size:15px}
+.campos{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px 20px;margin-top:12px}
+.campo label{display:block;font-weight:500;font-size:15px;margin-bottom:6px;line-height:1.3}
+.campo .ht{display:block;color:var(--tenue);font-size:13px;margin-top:4px}
+input.num,.rutas input{width:100%;padding:10px 12px;border:1px solid var(--linea);border-radius:8px;font:600 20px var(--cond);color:var(--tinta)}
+input.num:focus,.rutas input:focus{border-color:var(--tinta);outline:none;box-shadow:0 0 0 3px rgba(22,34,46,.12)}
+.errorlist{color:var(--vencido);list-style:none;padding:0;margin:4px 0 0;font-size:14px}
+.rutas table{width:100%;border-collapse:collapse}
+.rutas th{text-align:left;font:500 14px var(--texto);color:var(--tenue);padding:0 8px 6px 0}
+.rutas td{padding:4px 8px 4px 0;vertical-align:middle}
+.rutas td.del{width:90px;font-size:14px;color:var(--tenue)}
+.rutas input[type=checkbox]{width:auto}
+.acciones{display:flex;gap:12px;align-items:center;max-width:760px;margin-top:24px}
+.op{border-top:4px solid var(--ops)} .ad{border-top:4px solid var(--adm)} .ju{border-top:4px solid var(--jur)}
+</style>{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <h1>{{ cfg.nombre }}</h1>
+  <p>Indicadores de la {{ semana_txt|lower }}{% if instancia %}. Ya hay una captura; puedes corregirla.{% endif %}</p>
+  <span class="plazo{% if vencido %} vencido{% endif %}">
+    {% if vencido %}El plazo cerró el {{ limite_txt }}{% if not bloqueado %}; se guardará como entrega tarde{% endif %}.
+    {% else %}Entrega antes del {{ limite_txt }}{% endif %}
+  </span>
+</div>
+
+{% if bloqueado %}
+  <div class="seccion">Esta semana ya no acepta cambios. Si necesitas corregir algo, pídelo a un administrador.</div>
+{% else %}
+<form method="post" novalidate>{% csrf_token %}
+  {{ form.non_field_errors }}
+  {% for titulo, ayuda, campos in form.secciones_render %}
+  <section class="seccion {% if area == 'operaciones' %}op{% elif area == 'administracion' %}ad{% else %}ju{% endif %}">
+    <h2>{{ titulo }}</h2>{% if ayuda %}<p class="ayuda">{{ ayuda }}</p>{% endif %}
+    <div class="campos">
+      {% for campo in campos %}
+      <div class="campo">
+        <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+        {{ campo }}
+        {% if campo.help_text %}<span class="ht">{{ campo.help_text }}</span>{% endif %}
+        {{ campo.errors }}
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+
+  {% if formset %}
+  <section class="seccion op rutas">
+    <h2>Unidades por ruta</h2>
+    <p class="ayuda">Se precargan las rutas de la semana anterior; ajusta lo que cambió.</p>
+    {{ formset.management_form }}
+    {{ formset.non_form_errors }}
+    <table>
+      <thead><tr><th>Ruta</th><th>Unidades</th><th></th></tr></thead>
+      <tbody id="filas-rutas">
+      {% for f in formset %}
+        <tr>{% for h in f.hidden_fields %}{{ h }}{% endfor %}
+          <td>{{ f.ruta }}{{ f.ruta.errors }}</td>
+          <td>{{ f.unidades }}{{ f.unidades.errors }}</td>
+          <td class="del">{% if f.instance.pk %}<label>{{ f.DELETE }} Quitar</label>{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <template id="fila-vacia"><tr>{% for h in formset.empty_form.hidden_fields %}{{ h }}{% endfor %}
+      <td>{{ formset.empty_form.ruta }}</td><td>{{ formset.empty_form.unidades }}</td><td></td></tr></template>
+    <button type="button" class="btn sec" id="agregar-ruta" style="margin-top:12px">Agregar ruta</button>
+  </section>
+  {% endif %}
+
+  <div class="acciones">
+    <button class="btn" type="submit">Guardar indicadores</button>
+    <a class="btn sec" href="{% url 'dashboard' %}">Cancelar</a>
+  </div>
+</form>
+{% endif %}
+{% endblock %}
+{% block scripts %}{% if formset %}<script>
+document.getElementById("agregar-ruta").addEventListener("click", () => {
+  const total = document.getElementById("id_rutas-TOTAL_FORMS");
+  const n = parseInt(total.value, 10);
+  const html = document.getElementById("fila-vacia").innerHTML.replace(/__prefix__/g, n);
+  document.getElementById("filas-rutas").insertAdjacentHTML("beforeend", html);
+  total.value = n + 1;
+  document.querySelector(`#id_rutas-${n}-ruta`).focus();
+});
+</script>{% endif %}{% endblock %}

@@ -1,0 +1,251 @@
+{% extends "core/base.html" %}
+{% block title %}Tablero · {{ semana_txt }}{% endblock %}
+{% block estilos %}<style>
+.cabeza{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:20px}
+.cabeza h1{font:700 clamp(30px,4vw,46px)/1 var(--cond);margin:0}
+.cabeza .sub{color:var(--tenue);margin-top:8px}
+.selector{display:flex;gap:8px;align-items:center}
+.selector a,.selector span.off{display:grid;place-items:center;width:40px;height:40px;border-radius:8px;border:1px solid var(--linea);background:#fff;text-decoration:none;font-size:20px}
+.selector span.off{opacity:.35}
+.selector select{height:40px;border-radius:8px;border:1px solid var(--linea);padding:0 10px;font:500 15px var(--texto);background:#fff;max-width:280px}
+
+/* Línea de entregas: cada dirección es una parada */
+.linea{background:#fff;border:1px solid var(--linea);border-radius:14px;padding:22px 26px 20px;margin-bottom:28px}
+.linea-top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.linea-top strong{font:600 20px var(--cond)}
+.linea-top .lim{color:var(--tenue)}
+.linea-top .lim b{color:var(--tinta);font-weight:600}
+.paradas{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);position:relative}
+.paradas::before{content:"";position:absolute;left:16.66%;right:16.66%;top:13px;height:6px;border-radius:3px;background:var(--linea)}
+.parada{position:relative;text-align:center;padding:0 8px}
+.punto{width:32px;height:32px;border-radius:50%;margin:0 auto 10px;background:#fff;border:6px solid var(--pendiente);position:relative}
+.parada.ok .punto{border-color:var(--ok);background:var(--ok)}
+.parada.tarde .punto{border-color:var(--tarde);background:var(--tarde)}
+.parada.vencido .punto{border-color:var(--vencido)}
+.parada .nom{font-weight:600;line-height:1.25}
+.parada .est{font-size:14px;margin-top:2px}
+.parada.ok .est{color:var(--ok)} .parada.tarde .est{color:#8a5d00} .parada.vencido .est{color:var(--vencido)} .parada.pendiente .est{color:var(--tenue)}
+.parada .det{font-size:13px;color:var(--tenue)}
+
+/* Pestañas por dirección */
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--linea);margin-bottom:22px;overflow-x:auto}
+.tab{background:none;border:0;padding:12px 18px;font:600 19px var(--cond);color:var(--tenue);cursor:pointer;border-bottom:4px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.tab[aria-selected=true]{color:var(--tinta)}
+.tab[data-area=operaciones][aria-selected=true]{border-color:var(--ops)}
+.tab[data-area=administracion][aria-selected=true]{border-color:var(--adm)}
+.tab[data-area=juridico][aria-selected=true]{border-color:var(--jur)}
+.panel[hidden]{display:none}
+
+/* Tira de indicadores */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));background:#fff;border:1px solid var(--linea);border-radius:14px;margin-bottom:22px;overflow:hidden}
+.kpi{padding:18px 20px;border-right:1px solid var(--linea);border-bottom:1px solid var(--linea);margin:0 -1px -1px 0}
+.kpi .t{font-size:14px;color:var(--tenue);line-height:1.25;min-height:2.5em}
+.kpi .v{font:700 34px/1.1 var(--cond);margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi .d{font-size:14px;font-weight:500;margin-top:4px;color:var(--tenue)}
+.kpi .d.bien{color:var(--bien)} .kpi .d.mal{color:var(--mal)}
+.panel[data-area=operaciones] .kpis{border-top:4px solid var(--ops)}
+.panel[data-area=administracion] .kpis{border-top:4px solid var(--adm)}
+.panel[data-area=juridico] .kpis{border-top:4px solid var(--jur)}
+
+.graficas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.g{background:#fff;border:1px solid var(--linea);border-radius:14px;padding:18px 20px}
+.g.ancha{grid-column:1/-1}
+.g h3{font:600 19px/1.2 var(--cond);margin:0 0 2px}
+.g p{margin:0 0 12px;color:var(--tenue);font-size:14px}
+.lienzo{position:relative;height:260px}
+.vacio{height:260px;display:grid;place-items:center;color:var(--tenue);text-align:center;border:2px dashed var(--linea);border-radius:10px;padding:16px}
+@media (max-width:820px){.graficas{grid-template-columns:1fr}.paradas{grid-template-columns:1fr;gap:16px}.paradas::before{display:none}.parada{display:grid;grid-template-columns:32px 1fr;gap:4px 12px;text-align:left}.punto{margin:0;grid-row:span 3}}
+</style>{% endblock %}
+
+{% block contenido %}
+<div class="cabeza">
+  <div>
+    <h1>{{ semana_txt }}</h1>
+    <div class="sub">{% if es_actual %}Semana que se reporta esta vez{% else %}Consulta histórica{% endif %}</div>
+  </div>
+  <form class="selector" method="get">
+    <a href="?semana={{ anterior }}" aria-label="Semana anterior">‹</a>
+    <select name="semana" aria-label="Elegir semana" onchange="this.form.submit()">
+      {% for valor, txt in opciones %}<option value="{{ valor }}"{% if valor == semana|date:'Y-m-d' %} selected{% endif %}>{{ txt }}</option>{% endfor %}
+    </select>
+    {% if siguiente %}<a href="?semana={{ siguiente }}" aria-label="Semana siguiente">›</a>{% else %}<span class="off" aria-hidden="true">›</span>{% endif %}
+  </form>
+</div>
+
+<section class="linea" aria-label="Entregas de la semana">
+  <div class="linea-top">
+    <strong>{{ entregados }} de 3 direcciones entregaron</strong>
+    <span class="lim">{% if vencido %}Plazo cerrado: {{ limite_txt }}{% else %}Límite: <b>{{ limite_txt }}</b>, faltan <b>{{ restante }}</b>{% endif %}</span>
+  </div>
+  <ol class="paradas">
+    {% for e in entregas %}
+    <li class="parada {{ e.estado }}">
+      <div class="punto"></div>
+      <div class="nom">{{ e.nombre }}</div>
+      <div class="est">{{ e.txt }}</div>
+      {% if e.detalle %}<div class="det">{{ e.detalle }}</div>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+
+<div class="tabs" role="tablist">
+  {% for slug, titulo in areas %}
+  <button class="tab" role="tab" data-area="{{ slug }}" aria-selected="false" aria-controls="panel-{{ slug }}">{{ titulo }}</button>
+  {% endfor %}
+</div>
+
+<section class="panel" id="panel-operaciones" data-area="operaciones" role="tabpanel" hidden>
+  {% include "core/_kpis.html" with lista=kpis.operaciones %}
+  <div class="graficas">
+    <div class="g"><h3>Disponibilidad de flota y cumplimiento del plan</h3><p>Porcentaje, últimas 12 semanas</p><div class="lienzo"><canvas id="op-pct"></canvas></div></div>
+    <div class="g"><h3>Unidades disponibles e inhabilitadas</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="op-unidades"></canvas></div></div>
+    <div class="g"><h3>Motivos de inhabilitación</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="op-motivos"></canvas></div></div>
+    <div class="g"><h3>Combustible</h3><p>Costo semanal y rendimiento km/L</p><div class="lienzo"><canvas id="op-combustible"></canvas></div></div>
+    <div class="g ancha"><h3>Unidades por ruta</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="op-rutas"></canvas></div></div>
+  </div>
+</section>
+
+<section class="panel" id="panel-administracion" data-area="administracion" role="tabpanel" hidden>
+  {% include "core/_kpis.html" with lista=kpis.administracion %}
+  <div class="graficas">
+    <div class="g"><h3>Altas y bajas</h3><p>Últimas 12 semanas, con rotación semanal</p><div class="lienzo"><canvas id="ad-movs"></canvas></div></div>
+    <div class="g"><h3>Motivos de baja</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ad-bajas"></canvas></div></div>
+    <div class="g"><h3>Incapacidades por tipo</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ad-incap"></canvas></div></div>
+    <div class="g"><h3>Vacantes abiertas por puesto</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ad-vac"></canvas></div></div>
+  </div>
+</section>
+
+<section class="panel" id="panel-juridico" data-area="juridico" role="tabpanel" hidden>
+  {% include "core/_kpis.html" with lista=kpis.juridico %}
+  <div class="graficas">
+    <div class="g ancha"><h3>Audiencias por instancia</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ju-aud"></canvas></div></div>
+    <div class="g"><h3>Personas lesionadas por código</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ju-les"></canvas></div></div>
+    <div class="g"><h3>Determinación de responsabilidad</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ju-resp"></canvas></div></div>
+    <div class="g"><h3>Siniestros y lesionados</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ju-sin"></canvas></div></div>
+    <div class="g"><h3>Pólizas y acuerdos entre particulares</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ju-pol"></canvas></div></div>
+  </div>
+</section>
+
+{{ graficas|json_script:"datos-graficas" }}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const D = JSON.parse(document.getElementById("datos-graficas").textContent);
+const L = D.labels;
+const C = {ops:"#0B7A5C", opsClaro:"#8CCBB7", adm:"#3D4DB7", admClaro:"#A9B2E6", jur:"#A25A00", jurClaro:"#E3B67A",
+           gris:"#8A96A3", rojo:"#C0392B", verde:"#2E9E5B", amarillo:"#E2B400", negro:"#222B33", azul:"#2F6FDB"};
+
+if (window.Chart) {
+Chart.defaults.font.family = '"Barlow", system-ui, sans-serif';
+Chart.defaults.font.size = 13;
+Chart.defaults.color = "#5B6875";
+Chart.defaults.maintainAspectRatio = false;
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.boxWidth = 8;
+Chart.defaults.plugins.legend.labels.boxHeight = 8;
+Chart.defaults.elements.line.cubicInterpolationMode = "monotone";
+Chart.defaults.elements.bar.borderRadius = 4;
+Chart.defaults.spanGaps = true;
+Chart.defaults.scale.grid.color = "#E7EBEF";
+}
+
+const num = v => v == null ? "—" : Number(v).toLocaleString("es-MX", {maximumFractionDigits: 2});
+
+function vacio(id, msg) {
+  const c = document.getElementById(id);
+  c.parentElement.outerHTML = `<div class="vacio">${msg || "Sin captura para esta semana"}</div>`;
+}
+function linea(id, series, opc = {}) {
+  new Chart(document.getElementById(id), {type: "line", data: {labels: L, datasets: series.map(s => ({
+    pointRadius: 3, borderWidth: 2.5, backgroundColor: s.color, borderColor: s.color, ...s}))}, options: opc});
+}
+function barras(id, labels, series, opc = {}) {
+  new Chart(document.getElementById(id), {type: "bar", data: {labels, datasets: series}, options: opc});
+}
+function dona(id, labels, data, colores) {
+  if (!data || data.every(v => !v)) return vacio(id, data ? "Sin casos esta semana" : null);
+  new Chart(document.getElementById(id), {type: "doughnut",
+    data: {labels, datasets: [{data, backgroundColor: colores, borderWidth: 2, borderColor: "#fff"}]},
+    options: {cutout: "58%", plugins: {legend: {position: "right"},
+      tooltip: {callbacks: {label: c => ` ${c.label}: ${num(c.raw)}`}}}}});
+}
+const pct = {scales: {y: {suggestedMax: 100, ticks: {callback: v => v + "%"}}},
+             plugins: {tooltip: {callbacks: {label: c => ` ${c.dataset.label}: ${num(c.raw)}%`}}}};
+
+const constructores = {
+  operaciones() {
+    const o = D.ops;
+    linea("op-pct", [{label: "Disponibilidad", data: o.disponibilidad, color: C.ops},
+                     {label: "Cumplimiento del plan", data: o.cumplimiento, color: C.azul}], pct);
+    barras("op-unidades", L, [{label: "Disponibles", data: o.disponibles, backgroundColor: C.ops, stack: "u"},
+                              {label: "Inhabilitadas", data: o.inhabilitadas, backgroundColor: C.rojo, stack: "u"}],
+           {scales: {x: {stacked: true}, y: {stacked: true, beginAtZero: true}}});
+    dona("op-motivos", ["Taller", "Siniestro", "Documentación", "Otro"], o.inhab_motivos, [C.ops, C.rojo, C.jurClaro, C.gris]);
+    new Chart(document.getElementById("op-combustible"), {data: {labels: L, datasets: [
+      {type: "bar", label: "Costo ($)", data: o.costo, backgroundColor: C.opsClaro, yAxisID: "y"},
+      {type: "line", label: "Rendimiento km/L", data: o.rendimiento, borderColor: C.ops, backgroundColor: C.ops, borderWidth: 2.5, yAxisID: "y2"}]},
+      options: {scales: {y: {beginAtZero: true, ticks: {callback: v => "$" + Number(v).toLocaleString("es-MX")}},
+                         y2: {position: "right", grid: {display: false}, title: {display: true, text: "km/L"}}}}});
+    if (!o.rutas || !o.rutas.labels.length) vacio("op-rutas");
+    else barras("op-rutas", o.rutas.labels, [{label: "Unidades", data: o.rutas.data, backgroundColor: C.ops}],
+                {plugins: {legend: {display: false}}, scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
+  },
+  administracion() {
+    const a = D.adm;
+    new Chart(document.getElementById("ad-movs"), {data: {labels: L, datasets: [
+      {type: "bar", label: "Altas", data: a.altas, backgroundColor: C.adm},
+      {type: "bar", label: "Bajas", data: a.bajas, backgroundColor: C.rojo},
+      {type: "line", label: "Rotación %", data: a.rotacion, borderColor: C.negro, backgroundColor: C.negro, borderWidth: 2, yAxisID: "y2"}]},
+      options: {scales: {y: {beginAtZero: true, ticks: {precision: 0}},
+                         y2: {position: "right", beginAtZero: true, grid: {display: false}, ticks: {callback: v => v + "%"}}}}});
+    dona("ad-bajas", ["Renuncia", "Despido", "Abandono", "Otro"], a.bajas_motivos, [C.adm, C.rojo, C.jur, C.gris]);
+    barras("ad-incap", L, [
+      {label: "Enfermedad general", data: a.incap_enf, backgroundColor: C.adm, stack: "i"},
+      {label: "Riesgo de trabajo", data: a.incap_riesgo, backgroundColor: C.rojo, stack: "i"},
+      {label: "Maternidad", data: a.incap_mat, backgroundColor: C.admClaro, stack: "i"}],
+      {scales: {x: {stacked: true}, y: {stacked: true, beginAtZero: true, ticks: {precision: 0}}}});
+    if (!a.vacantes) vacio("ad-vac");
+    else barras("ad-vac", ["Operador", "Mecánico", "Administrativo", "Otro"],
+                [{label: "Vacantes", data: a.vacantes, backgroundColor: C.adm}],
+                {indexAxis: "y", plugins: {legend: {display: false}}, scales: {x: {beginAtZero: true, ticks: {precision: 0}}}});
+  },
+  juridico() {
+    const j = D.jur;
+    barras("ju-aud", L, [
+      {label: "Centro de Conciliación Laboral", data: j.ccl, backgroundColor: C.jur, stack: "a"},
+      {label: "Tribunal de Conciliación y Arbitraje", data: j.tca, backgroundColor: C.jurClaro, stack: "a"},
+      {label: "Juzgados Laborales", data: j.juz, backgroundColor: C.negro, stack: "a"}],
+      {scales: {x: {stacked: true}, y: {stacked: true, beginAtZero: true, ticks: {precision: 0}}}});
+    if (!j.lesionados) vacio("ju-les");
+    else barras("ju-les", ["Verde", "Amarillo", "Rojo", "Negro"],
+                [{label: "Personas", data: j.lesionados, backgroundColor: [C.verde, C.amarillo, C.rojo, C.negro]}],
+                {plugins: {legend: {display: false}}, scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
+    dona("ju-resp", ["De la empresa", "De terceros", "Compartida", "En determinación"], j.resp, [C.rojo, C.ops, C.jurClaro, C.gris]);
+    linea("ju-sin", [{label: "Siniestros", data: j.siniestros, color: C.jur},
+                     {label: "Personas lesionadas", data: j.lesionados_serie, color: C.rojo}],
+          {scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
+    barras("ju-pol", L, [{label: "Activaciones de póliza", data: j.polizas, backgroundColor: C.jur},
+                         {label: "Acuerdos entre particulares", data: j.acuerdos, backgroundColor: C.jurClaro}],
+           {scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
+  },
+};
+
+const hechos = new Set();
+function mostrar(area) {
+  if (!constructores[area]) area = "operaciones";
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.area === area));
+  document.querySelectorAll(".panel").forEach(p => p.hidden = p.dataset.area !== area);
+  if (!hechos.has(area)) {  // se dibuja al hacerse visible
+    hechos.add(area);
+    if (window.Chart) constructores[area]();
+    else document.querySelectorAll(`#panel-${area} .lienzo`).forEach(l => l.outerHTML = '<div class="vacio">No se pudo cargar la librería de gráficas. Revisa la conexión y recarga.</div>');
+  }
+  history.replaceState(null, "", location.search + "#" + area);
+}
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => mostrar(t.dataset.area)));
+mostrar(location.hash.slice(1));
+</script>
+{% endblock %}

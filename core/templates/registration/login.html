@@ -1,0 +1,24 @@
+{% extends "core/base.html" %}
+{% block title %}Entrar · Indicadores{% endblock %}
+{% block estilos %}<style>
+.caja{max-width:380px;margin:8vh auto;background:#fff;border-radius:12px;padding:32px;border:1px solid var(--linea)}
+.caja h1{font:700 28px/1.1 var(--cond);margin:0 0 6px}
+.caja p{color:var(--tenue);margin:0 0 24px}
+.caja label{display:block;font-weight:600;margin:14px 0 6px}
+.caja input{width:100%;padding:12px;border:1px solid var(--linea);border-radius:8px;font:inherit}
+.caja .btn{width:100%;margin-top:22px}
+.err{color:var(--vencido);font-weight:500}
+</style>{% endblock %}
+{% block contenido %}
+<div class="caja">
+  <h1>Entrar</h1>
+  <p>Usa el usuario que te asignó sistemas.</p>
+  {% if form.errors %}<p class="err">Usuario o contraseña incorrectos.</p>{% endif %}
+  <form method="post">{% csrf_token %}
+    <label for="id_username">Usuario</label>{{ form.username }}
+    <label for="id_password">Contraseña</label>{{ form.password }}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="btn" type="submit">Entrar</button>
+  </form>
+</div>
+{% endblock %}
