@@ -29,3 +29,11 @@ class Command(BaseCommand):
                 u.is_superuser = u.is_staff = u.is_active = True
                 u.save()
                 self.stdout.write(f"Contraseña restablecida: {usuario}")
+                comillas = clave[:1] in ("'", '"') or clave[-1:] in ("'", '"')
+                espacios = clave != clave.strip()
+                valida = u.check_password(clave)
+                self.stdout.write(
+                    f"DIAG usuario={usuario!r} largo_clave={len(clave)} "
+                    f"espacios={espacios} comillas={comillas} "
+                    f"valida={valida} activo={u.is_active}"
+                )
