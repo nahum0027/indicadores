@@ -1,6 +1,8 @@
 from django.contrib import admin
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin
 
-from .models import ReporteAdministracion, ReporteJuridico, ReporteOperaciones, UnidadesRuta
+from .models import Perfil, ReporteAdministracion, ReporteJuridico, ReporteOperaciones, UnidadesRuta
 
 
 class RutaInline(admin.TabularInline):
@@ -22,3 +24,21 @@ class OperacionesAdmin(BaseAdmin):
 admin.site.register(ReporteAdministracion, BaseAdmin)
 admin.site.register(ReporteJuridico, BaseAdmin)
 admin.site.site_header = "Indicadores CCPOTEQ"
+
+
+class PerfilInline(admin.StackedInline):
+    model = Perfil
+    can_delete = False
+    extra = 0
+
+
+class UsuarioAdmin(UserAdmin):
+    inlines = [PerfilInline]
+
+    def get_inline_instances(self, request, obj=None):
+        return super().get_inline_instances(request, obj) if obj else []  # al crear, el perfil lo hace la señal
+
+
+User = get_user_model()
+admin.site.unregister(User)
+admin.site.register(User, UsuarioAdmin)

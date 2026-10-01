@@ -1,0 +1,29 @@
+{% extends "core/base.html" %}
+{% block title %}Cambiar contraseña{% endblock %}
+{% block estilos %}<style>
+.caja{max-width:440px;margin:6vh auto;background:#fff;border-radius:12px;padding:32px;border:1px solid var(--linea)}
+.caja h1{font:700 28px/1.1 var(--cond);margin:0 0 6px}
+.caja .intro{color:var(--tenue);margin:0 0 20px}
+.caja label{display:block;font-weight:600;margin:16px 0 6px}
+.caja input{width:100%;padding:12px;border:1px solid var(--linea);border-radius:8px;font:inherit}
+.caja .btn{width:100%;margin-top:24px}
+.caja .ht{color:var(--tenue);font-size:13px;margin-top:6px}
+.caja .ht ul{margin:4px 0 0;padding-left:18px}
+.errorlist{color:var(--vencido);list-style:none;padding:0;margin:6px 0 0;font-size:14px}
+</style>{% endblock %}
+{% block contenido %}
+<div class="caja">
+  <h1>Cambiar contraseña</h1>
+  <p class="intro">{% if obligatorio %}Es tu primer inicio de sesión. Cambia la contraseña temporal por una que solo tú conozcas para continuar.{% else %}Escribe tu contraseña actual y la nueva.{% endif %}</p>
+  <form method="post" novalidate>{% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for campo in form %}
+      <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+      {{ campo }}
+      {{ campo.errors }}
+      {% if campo.name == "new_password1" %}<div class="ht">Mínimo 8 caracteres y que no sea una contraseña común.</div>{% endif %}
+    {% endfor %}
+    <button class="btn" type="submit">Guardar contraseña</button>
+  </form>
+</div>
+{% endblock %}

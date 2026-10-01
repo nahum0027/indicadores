@@ -2,14 +2,16 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 from django.forms import inlineformset_factory
 from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
 from .areas import AREAS, areas_de_usuario
-from .models import ReporteOperaciones, UnidadesRuta
+from .models import Perfil, ReporteOperaciones, UnidadesRuta
 from .periodos import (etiqueta_corta, etiqueta_semana, fecha_larga, limite_de,
                        parse_semana, periodo_actual)
 
@@ -246,3 +248,22 @@ def dashboard(request):
         "kpis": kpis, "graficas": graficas,
         "areas": [(s, c["titulo"]) for s, c in AREAS.items()],
     })
+
+
+# ---------------------------------------------------------------- contraseña
+
+
+@login_required
+def cambiar_clave(request):
+    perfil, _ = Perfil.objects.get_or_create(user=request.user)
+    form = PasswordChangeForm(request.user, request.POST or None)
+    for campo in form.fields.values():
+        campo.widget.attrs.pop("autofocus", None)
+    if request.method == "POST" and form.is_valid():
+        user = form.save()
+        update_session_auth_hash(request, user)  # no lo saca de la sesión
+        perfil.debe_cambiar_clave = False
+        perfil.save()
+        messages.success(request, "Contraseña actualizada.")
+        return redirect("dashboard")
+    return render(request, "core/cambiar_clave.html", {"form": form, "obligatorio": perfil.debe_cambiar_clave})

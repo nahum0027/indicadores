@@ -55,6 +55,7 @@ main{max-width:1280px;margin:0 auto;padding:28px 24px 64px}
     {% for slug, titulo in mis_areas %}<a class="capt" href="{% url 'capturar' slug %}">Capturar {{ titulo }}</a>{% endfor %}
     <span class="sep"></span>
     {% if user.is_staff %}<a href="/admin/">Usuarios y datos</a>{% endif %}
+    <a href="{% url 'cambiar_clave' %}">Cambiar contraseña</a>
     <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Salir ({{ user.get_short_name|default:user.username }})</button></form>
   </nav>
   {% endif %}

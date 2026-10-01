@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 def pct(a, b):
@@ -161,3 +163,26 @@ class ReporteJuridico(ReporteBase):
     @property
     def lesionados(self):
         return self.les_verde + self.les_amarillo + self.les_rojo + self.les_negro
+
+
+class Perfil(models.Model):
+    """Datos extra del usuario. Por ahora solo controla el cambio de contraseña obligatorio."""
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="perfil")
+    debe_cambiar_clave = models.BooleanField(
+        "Debe cambiar su contraseña al entrar", default=True,
+        help_text="Márcalo cuando le asignes o restablezcas una contraseña temporal.",
+    )
+
+    class Meta:
+        verbose_name = "perfil"
+        verbose_name_plural = "perfil"
+
+    def __str__(self):
+        return f"Perfil de {self.user}"
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def crear_perfil(sender, instance, created, **kwargs):
+    if created:
+        # Los usuarios nuevos entran con contraseña temporal; el superusuario inicial no.
+        Perfil.objects.get_or_create(user=instance, defaults={"debe_cambiar_clave": not instance.is_superuser})

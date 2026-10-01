@@ -5,4 +5,5 @@ from . import views
 urlpatterns = [
     path("", views.dashboard, name="dashboard"),
     path("capturar/<slug:area>/", views.capturar, name="capturar"),
+    path("cambiar-contrasena/", views.cambiar_clave, name="cambiar_clave"),
 ]
