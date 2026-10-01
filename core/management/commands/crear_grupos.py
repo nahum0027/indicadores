@@ -19,6 +19,13 @@ class Command(BaseCommand):
         usuario = os.environ.get("DJANGO_SUPERUSER_USERNAME")
         clave = os.environ.get("DJANGO_SUPERUSER_PASSWORD")
         User = get_user_model()
-        if usuario and clave and not User.objects.filter(username=usuario).exists():
-            User.objects.create_superuser(usuario, os.environ.get("DJANGO_SUPERUSER_EMAIL", ""), clave)
-            self.stdout.write(f"Superusuario creado: {usuario}")
+        if usuario and clave:
+            u = User.objects.filter(username=usuario).first()
+            if not u:
+                User.objects.create_superuser(usuario, os.environ.get("DJANGO_SUPERUSER_EMAIL", ""), clave)
+                self.stdout.write(f"Superusuario creado: {usuario}")
+            elif os.environ.get("RESET_ADMIN") == "True":
+                u.set_password(clave)
+                u.is_superuser = u.is_staff = u.is_active = True
+                u.save()
+                self.stdout.write(f"Contraseña restablecida: {usuario}")
