@@ -28,13 +28,13 @@ class Command(BaseCommand):
             inhab = [r.randint(6, 14), r.randint(0, 4), r.randint(0, 3), r.randint(0, 2)]
             disp = 180 - sum(inhab)
             prog = r.randint(5200, 5400)
-            km = r.randint(118000, 126000)
-            litros = km / r.uniform(2.6, 3.0)
+            litros = r.randint(40000, 45000)
             op, _ = ReporteOperaciones.objects.update_or_create(semana=s, defaults=dict(
                 unidades_disponibles=disp, inhab_taller=inhab[0], inhab_siniestro=inhab[1],
                 inhab_documentacion=inhab[2], inhab_otro=inhab[3],
                 corridas_programadas=prog, corridas_realizadas=int(prog * r.uniform(.9, .99)),
-                litros=round(litros, 2), costo_combustible=round(litros * 25.4, 2), km_recorridos=km,
+                litros=litros, cargas=r.randint(820, 880), consumo_promedio=round(r.uniform(2.6, 3.0), 2),
+                cc_recibidas=(rec := r.randint(380, 470)), cc_atendidas=int(rec * r.uniform(.86, .97)), cc_quejas=r.randint(8, 30),
                 tarde=(i == 3)))
             op.rutas.all().delete()
             restantes = disp
@@ -47,12 +47,13 @@ class Command(BaseCommand):
                 bajas_despido=r.randint(0, 2), bajas_abandono=r.randint(0, 3), bajas_otro=r.randint(0, 1),
                 incap_enfermedad=r.randint(3, 10), incap_riesgo=r.randint(0, 3), incap_maternidad=r.randint(0, 1),
                 dias_incapacidad=r.randint(20, 70), vac_operador=r.randint(8, 18), vac_mecanico=r.randint(0, 3),
-                vac_administrativo=r.randint(0, 2), vac_otro=r.randint(0, 2)))
+                vac_administrativo=r.randint(0, 2), vac_otro=r.randint(0, 2),
+                vaca_adm_h=r.randint(1, 5), vaca_adm_m=r.randint(1, 6), vaca_ops_h=r.randint(8, 20), vaca_ops_m=r.randint(1, 6),
+                cap_en_curso=r.randint(10, 25), cap_liberados=r.randint(3, 10), cap_bajas=r.randint(0, 4)))
             sin = r.randint(2, 9)
             ReporteJuridico.objects.update_or_create(semana=s, defaults=dict(
                 aud_ccl=r.randint(1, 6), aud_tca=r.randint(0, 3), aud_juzgados=r.randint(0, 4), siniestros=sin,
                 resp_propia=r.randint(0, sin // 2), resp_tercero=r.randint(0, sin // 2), resp_compartida=r.randint(0, 1),
                 resp_proceso=r.randint(0, 2), les_verde=r.randint(0, 5), les_amarillo=r.randint(0, 2),
-                les_rojo=r.randint(0, 1), les_negro=0, polizas_activadas=r.randint(0, sin),
-                acuerdos_particulares=r.randint(0, 3)))
+                les_rojo=r.randint(0, 1), les_negro=0, polizas_activadas=r.randint(0, sin)))
         self.stdout.write(self.style.SUCCESS(f"Datos demo listos ({12 - inicio} semanas)."))

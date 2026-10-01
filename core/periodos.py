@@ -1,4 +1,4 @@
-"""Reglas de semanas: cada lunes se reporta la semana anterior (lunes a domingo)."""
+"""Reglas de semanas: cada lunes (9:00 a 10:00) se carga lo generado de lunes a viernes de la semana anterior."""
 from datetime import date, datetime, time, timedelta
 
 from django.conf import settings
@@ -37,7 +37,7 @@ def parse_semana(texto):
 
 
 def etiqueta_semana(s: date) -> str:
-    fin = s + timedelta(days=6)
+    fin = s + timedelta(days=4)  # lunes a viernes
     num = s.isocalendar()[1]
     if s.month == fin.month:
         rango = f"{s.day}–{fin.day} {MESES[s.month - 1]}"

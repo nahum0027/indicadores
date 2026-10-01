@@ -1,9 +1,11 @@
+{% load static %}
 <!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% block title %}Indicadores semanales{% endblock %}</title>
+<title>{% block title %}Indicadores CCPOTEQ{% endblock %}</title>
+<link rel="icon" href="{% static 'core/logo.png' %}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
@@ -21,8 +23,11 @@ body{margin:0;background:var(--papel);color:var(--tinta);font:400 16px/1.5 var(-
 a{color:inherit}
 :focus-visible{outline:3px solid #2F6FDB;outline-offset:2px;border-radius:4px}
 .barra{background:var(--tinta);color:#fff}
-.barra .dentro{max-width:1280px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:24px;min-height:56px;flex-wrap:wrap}
+.barra .dentro{max-width:1280px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:24px;min-height:80px;flex-wrap:wrap}
 .marca{font:700 20px/1 var(--cond);letter-spacing:.01em;text-decoration:none}
+.marca{display:flex;align-items:center;gap:12px}
+.marca img{height:56px;width:auto;display:block;background:#fff;padding:6px 12px;border-radius:8px}
+@media (max-width:600px){.marca img{height:42px;padding:4px 8px}}
 .nav{display:flex;gap:4px;align-items:center;flex:1;flex-wrap:wrap}
 .nav a,.nav button{color:#C9D3DC;text-decoration:none;padding:8px 12px;border-radius:6px;font:500 15px var(--texto);background:none;border:0;cursor:pointer}
 .nav a:hover,.nav button:hover{color:#fff;background:rgba(255,255,255,.08)}
@@ -40,7 +45,10 @@ main{max-width:1280px;margin:0 auto;padding:28px 24px 64px}
 </head>
 <body>
 <header class="barra"><div class="dentro">
-  <a class="marca" href="{% url 'dashboard' %}">Indicadores semanales</a>
+<a class="marca" href="{% url 'dashboard' %}">
+  <img src="{% static 'core/logo.png' %}" alt="CCPOTEQ">
+  <span>Indicadores</span>
+</a>
   {% if user.is_authenticated %}
   <nav class="nav">
     <a href="{% url 'dashboard' %}">Tablero</a>

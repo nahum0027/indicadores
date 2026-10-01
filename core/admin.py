@@ -21,4 +21,4 @@ class OperacionesAdmin(BaseAdmin):
 
 admin.site.register(ReporteAdministracion, BaseAdmin)
 admin.site.register(ReporteJuridico, BaseAdmin)
-admin.site.site_header = "Indicadores semanales"
+admin.site.site_header = "Indicadores CCPOTEQ"

@@ -24,10 +24,11 @@ class ReporteForm(forms.ModelForm):
 
 class OperacionesForm(ReporteForm):
     secciones = [
-        ("Unidades disponibles e inhabilitadas", "Estado de la flota al cierre del domingo.",
+        ("Unidades activas e inactivas", "Estado de la flota en la semana.",
          ["unidades_disponibles", "inhab_taller", "inhab_siniestro", "inhab_documentacion", "inhab_otro"]),
         ("Plan operativo", "", ["corridas_programadas", "corridas_realizadas"]),
-        ("Combustible", "Totales de la semana.", ["litros", "costo_combustible", "km_recorridos"]),
+        ("Combustible", "Totales de lunes a viernes.", ["litros", "cargas", "consumo_promedio"]),
+        ("Call Center", "", ["cc_recibidas", "cc_atendidas", "cc_quejas"]),
     ]
 
     class Meta(ReporteForm.Meta):
@@ -41,6 +42,8 @@ class AdministracionForm(ReporteForm):
         ("Incapacidades", "Número de incapacidades iniciadas en la semana.",
          ["incap_enfermedad", "incap_riesgo", "incap_maternidad", "dias_incapacidad"]),
         ("Vacantes", "Vacantes abiertas al cierre.", ["vac_operador", "vac_mecanico", "vac_administrativo", "vac_otro"]),
+        ("Vacaciones", "Personas que tomaron vacaciones en la semana.", ["vaca_adm_h", "vaca_adm_m", "vaca_ops_h", "vaca_ops_m"]),
+        ("Capacitación", "", ["cap_en_curso", "cap_liberados", "cap_bajas"]),
     ]
 
     class Meta(ReporteForm.Meta):
@@ -54,7 +57,7 @@ class JuridicoForm(ReporteForm):
         ("Determinación de responsabilidad", "Casos resueltos o en proceso durante la semana.",
          ["resp_propia", "resp_tercero", "resp_compartida", "resp_proceso"]),
         ("Personas lesionadas por código", "", ["les_verde", "les_amarillo", "les_rojo", "les_negro"]),
-        ("Pólizas y acuerdos", "", ["polizas_activadas", "acuerdos_particulares"]),
+        ("Pólizas", "", ["polizas_activadas"]),
     ]
 
     class Meta(ReporteForm.Meta):

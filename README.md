@@ -1,4 +1,4 @@
-# Indicadores semanales
+# Indicadores CCPOTEQ
 
 Cada dirección (Operaciones, Administración, Jurídica) captura sus indicadores de la semana anterior
 antes del **lunes a las 10:00**. El tablero muestra quién entregó, KPIs con variación contra la semana

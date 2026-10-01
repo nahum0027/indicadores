@@ -26,6 +26,7 @@
 .parada .est{font-size:14px;margin-top:2px}
 .parada.ok .est{color:var(--ok)} .parada.tarde .est{color:#8a5d00} .parada.vencido .est{color:var(--vencido)} .parada.pendiente .est{color:var(--tenue)}
 .parada .det{font-size:13px;color:var(--tenue)}
+.parada .resp{font-size:14px;color:var(--tenue)}
 
 /* Pestañas por dirección */
 .tabs{display:flex;gap:4px;border-bottom:2px solid var(--linea);margin-bottom:22px;overflow-x:auto}
@@ -54,14 +55,14 @@
 .g p{margin:0 0 12px;color:var(--tenue);font-size:14px}
 .lienzo{position:relative;height:260px}
 .vacio{height:260px;display:grid;place-items:center;color:var(--tenue);text-align:center;border:2px dashed var(--linea);border-radius:10px;padding:16px}
-@media (max-width:820px){.graficas{grid-template-columns:1fr}.paradas{grid-template-columns:1fr;gap:16px}.paradas::before{display:none}.parada{display:grid;grid-template-columns:32px 1fr;gap:4px 12px;text-align:left}.punto{margin:0;grid-row:span 3}}
+@media (max-width:820px){.graficas{grid-template-columns:1fr}.paradas{grid-template-columns:1fr;gap:16px}.paradas::before{display:none}.parada{display:grid;grid-template-columns:32px 1fr;gap:2px 12px;text-align:left}.punto{margin:0;grid-row:span 4}}
 </style>{% endblock %}
 
 {% block contenido %}
 <div class="cabeza">
   <div>
     <h1>{{ semana_txt }}</h1>
-    <div class="sub">{% if es_actual %}Semana que se reporta esta vez{% else %}Consulta histórica{% endif %}</div>
+    <div class="sub">{% if es_actual %}Información de lunes a viernes que se carga este lunes de 9:00 a 10:00{% else %}Consulta histórica{% endif %}</div>
   </div>
   <form class="selector" method="get">
     <a href="?semana={{ anterior }}" aria-label="Semana anterior">‹</a>
@@ -82,6 +83,7 @@
     <li class="parada {{ e.estado }}">
       <div class="punto"></div>
       <div class="nom">{{ e.nombre }}</div>
+      <div class="resp">{{ e.responsable }}</div>
       <div class="est">{{ e.txt }}</div>
       {% if e.detalle %}<div class="det">{{ e.detalle }}</div>{% endif %}
     </li>
@@ -98,11 +100,12 @@
 <section class="panel" id="panel-operaciones" data-area="operaciones" role="tabpanel" hidden>
   {% include "core/_kpis.html" with lista=kpis.operaciones %}
   <div class="graficas">
-    <div class="g"><h3>Disponibilidad de flota y cumplimiento del plan</h3><p>Porcentaje, últimas 12 semanas</p><div class="lienzo"><canvas id="op-pct"></canvas></div></div>
-    <div class="g"><h3>Unidades disponibles e inhabilitadas</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="op-unidades"></canvas></div></div>
-    <div class="g"><h3>Motivos de inhabilitación</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="op-motivos"></canvas></div></div>
-    <div class="g"><h3>Combustible</h3><p>Costo semanal y rendimiento km/L</p><div class="lienzo"><canvas id="op-combustible"></canvas></div></div>
+    <div class="g"><h3>Flota activa y cumplimiento del plan</h3><p>Porcentaje, últimas 12 semanas</p><div class="lienzo"><canvas id="op-pct"></canvas></div></div>
+    <div class="g"><h3>Unidades activas e inactivas</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="op-unidades"></canvas></div></div>
+    <div class="g"><h3>Motivos de inactividad</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="op-motivos"></canvas></div></div>
+    <div class="g"><h3>Combustible</h3><p>Litros por semana y consumo promedio km/L</p><div class="lienzo"><canvas id="op-combustible"></canvas></div></div>
     <div class="g ancha"><h3>Unidades por ruta</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="op-rutas"></canvas></div></div>
+    <div class="g ancha"><h3>Call Center</h3><p>Llamadas recibidas, atendidas y quejas, últimas 12 semanas</p><div class="lienzo"><canvas id="op-cc"></canvas></div></div>
   </div>
 </section>
 
@@ -113,6 +116,8 @@
     <div class="g"><h3>Motivos de baja</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ad-bajas"></canvas></div></div>
     <div class="g"><h3>Incapacidades por tipo</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ad-incap"></canvas></div></div>
     <div class="g"><h3>Vacantes abiertas por puesto</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ad-vac"></canvas></div></div>
+    <div class="g"><h3>Vacaciones por área y sexo</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ad-vacaciones"></canvas></div></div>
+    <div class="g"><h3>Capacitación</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ad-cap"></canvas></div></div>
   </div>
 </section>
 
@@ -122,8 +127,7 @@
     <div class="g ancha"><h3>Audiencias por instancia</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ju-aud"></canvas></div></div>
     <div class="g"><h3>Personas lesionadas por código</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ju-les"></canvas></div></div>
     <div class="g"><h3>Determinación de responsabilidad</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ju-resp"></canvas></div></div>
-    <div class="g"><h3>Siniestros y lesionados</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ju-sin"></canvas></div></div>
-    <div class="g"><h3>Pólizas y acuerdos entre particulares</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ju-pol"></canvas></div></div>
+    <div class="g ancha"><h3>Siniestros, lesionados y activaciones de póliza</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ju-sin"></canvas></div></div>
   </div>
 </section>
 
@@ -178,27 +182,33 @@ const pct = {scales: {y: {suggestedMax: 100, ticks: {callback: v => v + "%"}}},
 const constructores = {
   operaciones() {
     const o = D.ops;
-    linea("op-pct", [{label: "Disponibilidad", data: o.disponibilidad, color: C.ops},
+    linea("op-pct", [{label: "Flota activa", data: o.disponibilidad, color: C.ops},
                      {label: "Cumplimiento del plan", data: o.cumplimiento, color: C.azul}], pct);
-    barras("op-unidades", L, [{label: "Disponibles", data: o.disponibles, backgroundColor: C.ops, stack: "u"},
-                              {label: "Inhabilitadas", data: o.inhabilitadas, backgroundColor: C.rojo, stack: "u"}],
+    barras("op-unidades", L, [{label: "Activas", data: o.disponibles, backgroundColor: C.ops, stack: "u"},
+                              {label: "Inactivas", data: o.inhabilitadas, backgroundColor: C.rojo, stack: "u"}],
            {scales: {x: {stacked: true}, y: {stacked: true, beginAtZero: true}}});
     dona("op-motivos", ["Taller", "Siniestro", "Documentación", "Otro"], o.inhab_motivos, [C.ops, C.rojo, C.jurClaro, C.gris]);
     new Chart(document.getElementById("op-combustible"), {data: {labels: L, datasets: [
-      {type: "bar", label: "Costo ($)", data: o.costo, backgroundColor: C.opsClaro, yAxisID: "y"},
-      {type: "line", label: "Rendimiento km/L", data: o.rendimiento, borderColor: C.ops, backgroundColor: C.ops, borderWidth: 2.5, yAxisID: "y2"}]},
-      options: {scales: {y: {beginAtZero: true, ticks: {callback: v => "$" + Number(v).toLocaleString("es-MX")}},
+      {type: "bar", order: 1, label: "Litros", data: o.litros, backgroundColor: C.opsClaro, yAxisID: "y"},
+      {type: "line", order: 0, label: "Consumo promedio km/L", data: o.consumo, borderColor: C.ops, backgroundColor: C.ops, borderWidth: 2.5, yAxisID: "y2"}]},
+      options: {scales: {y: {beginAtZero: true, ticks: {callback: v => Number(v).toLocaleString("es-MX") + " L"}},
                          y2: {position: "right", grid: {display: false}, title: {display: true, text: "km/L"}}}}});
     if (!o.rutas || !o.rutas.labels.length) vacio("op-rutas");
     else barras("op-rutas", o.rutas.labels, [{label: "Unidades", data: o.rutas.data, backgroundColor: C.ops}],
                 {plugins: {legend: {display: false}}, scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
+    new Chart(document.getElementById("op-cc"), {data: {labels: L, datasets: [
+      {type: "bar", order: 1, label: "Recibidas", data: o.cc_recibidas, backgroundColor: C.opsClaro},
+      {type: "bar", order: 1, label: "Atendidas", data: o.cc_atendidas, backgroundColor: C.ops},
+      {type: "line", order: 0, label: "Quejas", data: o.cc_quejas, borderColor: C.rojo, backgroundColor: C.rojo, borderWidth: 2.5, yAxisID: "y2"}]},
+      options: {scales: {y: {beginAtZero: true, ticks: {precision: 0}},
+                         y2: {position: "right", beginAtZero: true, grid: {display: false}, ticks: {precision: 0}, title: {display: true, text: "Quejas"}}}}});
   },
   administracion() {
     const a = D.adm;
     new Chart(document.getElementById("ad-movs"), {data: {labels: L, datasets: [
-      {type: "bar", label: "Altas", data: a.altas, backgroundColor: C.adm},
-      {type: "bar", label: "Bajas", data: a.bajas, backgroundColor: C.rojo},
-      {type: "line", label: "Rotación %", data: a.rotacion, borderColor: C.negro, backgroundColor: C.negro, borderWidth: 2, yAxisID: "y2"}]},
+      {type: "bar", order: 1, label: "Altas", data: a.altas, backgroundColor: C.adm},
+      {type: "bar", order: 1, label: "Bajas", data: a.bajas, backgroundColor: C.rojo},
+      {type: "line", order: 0, label: "Rotación %", data: a.rotacion, borderColor: C.negro, backgroundColor: C.negro, borderWidth: 2, yAxisID: "y2"}]},
       options: {scales: {y: {beginAtZero: true, ticks: {precision: 0}},
                          y2: {position: "right", beginAtZero: true, grid: {display: false}, ticks: {callback: v => v + "%"}}}}});
     dona("ad-bajas", ["Renuncia", "Despido", "Abandono", "Otro"], a.bajas_motivos, [C.adm, C.rojo, C.jur, C.gris]);
@@ -211,6 +221,17 @@ const constructores = {
     else barras("ad-vac", ["Operador", "Mecánico", "Administrativo", "Otro"],
                 [{label: "Vacantes", data: a.vacantes, backgroundColor: C.adm}],
                 {indexAxis: "y", plugins: {legend: {display: false}}, scales: {x: {beginAtZero: true, ticks: {precision: 0}}}});
+    const v = a.vacaciones;
+    if (!v) vacio("ad-vacaciones");
+    else barras("ad-vacaciones", ["Administración", "Operaciones"], [
+      {label: "Hombres", data: [v[0], v[2]], backgroundColor: C.adm},
+      {label: "Mujeres", data: [v[1], v[3]], backgroundColor: C.admClaro}],
+      {scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
+    barras("ad-cap", L, [
+      {label: "En capacitación", data: a.cap_curso, backgroundColor: C.admClaro},
+      {label: "Liberados", data: a.cap_liberados, backgroundColor: C.adm},
+      {label: "Bajas", data: a.cap_bajas, backgroundColor: C.rojo}],
+      {scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
   },
   juridico() {
     const j = D.jur;
@@ -225,11 +246,9 @@ const constructores = {
                 {plugins: {legend: {display: false}}, scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
     dona("ju-resp", ["De la empresa", "De terceros", "Compartida", "En determinación"], j.resp, [C.rojo, C.ops, C.jurClaro, C.gris]);
     linea("ju-sin", [{label: "Siniestros", data: j.siniestros, color: C.jur},
-                     {label: "Personas lesionadas", data: j.lesionados_serie, color: C.rojo}],
+                     {label: "Personas lesionadas", data: j.lesionados_serie, color: C.rojo},
+                     {label: "Activaciones de póliza", data: j.polizas, color: C.negro}],
           {scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
-    barras("ju-pol", L, [{label: "Activaciones de póliza", data: j.polizas, backgroundColor: C.jur},
-                         {label: "Acuerdos entre particulares", data: j.acuerdos, backgroundColor: C.jurClaro}],
-           {scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
   },
 };
 

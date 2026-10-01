@@ -28,16 +28,20 @@ class ReporteBase(models.Model):
 
 
 class ReporteOperaciones(ReporteBase):
-    unidades_disponibles = entero("Unidades disponibles", "Unidades en condiciones de salir a ruta")
-    inhab_taller = entero("Inhabilitadas por taller", "Mantenimiento preventivo o correctivo")
-    inhab_siniestro = entero("Inhabilitadas por siniestro")
-    inhab_documentacion = entero("Inhabilitadas por documentación", "Permisos, verificación, placas, etc.")
-    inhab_otro = entero("Inhabilitadas por otro motivo")
+    unidades_disponibles = entero("Unidades activas", "Unidades que salieron a ruta / en condiciones de operar")
+    inhab_taller = entero("Inactivas por taller", "Mantenimiento preventivo o correctivo")
+    inhab_siniestro = entero("Inactivas por siniestro")
+    inhab_documentacion = entero("Inactivas por documentación", "Permisos, verificación, placas, etc.")
+    inhab_otro = entero("Inactivas por otro motivo")
     corridas_programadas = entero("Corridas programadas", "Según el plan operativo de la semana")
     corridas_realizadas = entero("Corridas realizadas")
-    litros = models.DecimalField("Litros de combustible", max_digits=12, decimal_places=2, default=0)
-    costo_combustible = models.DecimalField("Costo de combustible ($)", max_digits=14, decimal_places=2, default=0)
-    km_recorridos = models.DecimalField("Kilómetros recorridos", max_digits=12, decimal_places=2, default=0)
+    litros = models.DecimalField("Litros", max_digits=12, decimal_places=2, default=0)
+    cargas = entero("Cargas de combustible", "Número de cargas realizadas en la semana")
+    consumo_promedio = models.DecimalField("Consumo promedio (km/L)", max_digits=6, decimal_places=2, default=0,
+                                           help_text="Kilómetros por litro promedio de la flota")
+    cc_recibidas = entero("Llamadas recibidas")
+    cc_atendidas = entero("Llamadas atendidas")
+    cc_quejas = entero("Quejas registradas")
 
     class Meta(ReporteBase.Meta):
         verbose_name = "reporte de Operaciones"
@@ -60,12 +64,12 @@ class ReporteOperaciones(ReporteBase):
         return pct(self.corridas_realizadas, self.corridas_programadas)
 
     @property
-    def rendimiento(self):
-        return round(float(self.km_recorridos) / float(self.litros), 2) if self.litros else None
+    def litros_por_carga(self):
+        return round(float(self.litros) / self.cargas, 1) if self.cargas else None
 
     @property
-    def unidades_en_rutas(self):
-        return sum(r.unidades for r in self.rutas.all())
+    def cc_atencion(self):
+        return pct(self.cc_atendidas, self.cc_recibidas)
 
 
 class UnidadesRuta(models.Model):
@@ -84,7 +88,7 @@ class UnidadesRuta(models.Model):
 
 
 class ReporteAdministracion(ReporteBase):
-    plantilla_total = entero("Plantilla total al cierre", "Personas activas al domingo")
+    plantilla_total = entero("Plantilla total al cierre", "Personas activas al viernes")
     altas = entero("Altas")
     bajas_renuncia = entero("Bajas por renuncia")
     bajas_despido = entero("Bajas por despido")
@@ -98,6 +102,13 @@ class ReporteAdministracion(ReporteBase):
     vac_mecanico = entero("Vacantes de mecánico")
     vac_administrativo = entero("Vacantes administrativas")
     vac_otro = entero("Otras vacantes")
+    vaca_adm_h = entero("Administración: hombres")
+    vaca_adm_m = entero("Administración: mujeres")
+    vaca_ops_h = entero("Operaciones: hombres")
+    vaca_ops_m = entero("Operaciones: mujeres")
+    cap_en_curso = entero("Personal en capacitación")
+    cap_liberados = entero("Liberados")
+    cap_bajas = entero("Bajas en capacitación")
 
     class Meta(ReporteBase.Meta):
         verbose_name = "reporte de Administración"
@@ -114,6 +125,10 @@ class ReporteAdministracion(ReporteBase):
     @property
     def vacantes(self):
         return self.vac_operador + self.vac_mecanico + self.vac_administrativo + self.vac_otro
+
+    @property
+    def vacaciones(self):
+        return self.vaca_adm_h + self.vaca_adm_m + self.vaca_ops_h + self.vaca_ops_m
 
     @property
     def rotacion(self):
@@ -134,7 +149,6 @@ class ReporteJuridico(ReporteBase):
     les_rojo = entero("Código rojo")
     les_negro = entero("Código negro")
     polizas_activadas = entero("Activaciones de póliza")
-    acuerdos_particulares = entero("Acuerdos entre particulares")
 
     class Meta(ReporteBase.Meta):
         verbose_name = "reporte Jurídico"

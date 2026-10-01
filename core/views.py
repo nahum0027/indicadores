@@ -146,7 +146,7 @@ def dashboard(request):
         else:
             estado, txt = ("vencido", "Sin entregar") if vencido else ("pendiente", "Pendiente")
             detalle = ""
-        entregas.append({"slug": slug, "nombre": cfg["nombre"], "estado": estado, "txt": txt, "detalle": detalle})
+        entregas.append({"slug": slug, "nombre": cfg["nombre"], "responsable": cfg["responsable"], "estado": estado, "txt": txt, "detalle": detalle})
 
     restante = None
     if not vencido:
@@ -162,12 +162,16 @@ def dashboard(request):
     kpis = {
         "operaciones": [
             _kpi("Flota total", op, op_prev, "flota_total"),
-            _kpi("Unidades disponibles", op, op_prev, "unidades_disponibles", sube_es_bueno=True),
-            _kpi("Unidades inhabilitadas", op, op_prev, "inhabilitadas", sube_es_bueno=False),
-            _kpi("Disponibilidad", op, op_prev, "disponibilidad", "pct", True),
+            _kpi("Unidades activas", op, op_prev, "unidades_disponibles", sube_es_bueno=True),
+            _kpi("Unidades inactivas", op, op_prev, "inhabilitadas", sube_es_bueno=False),
+            _kpi("Flota activa", op, op_prev, "disponibilidad", "pct", True),
             _kpi("Cumplimiento del plan", op, op_prev, "cumplimiento", "pct", True),
-            _kpi("Costo de combustible", op, op_prev, "costo_combustible", "money", False),
-            _kpi("Rendimiento km/L", op, op_prev, "rendimiento", "dec", True),
+            _kpi("Litros de combustible", op, op_prev, "litros", sube_es_bueno=False),
+            _kpi("Cargas", op, op_prev, "cargas"),
+            _kpi("Consumo promedio km/L", op, op_prev, "consumo_promedio", "dec", True),
+            _kpi("Llamadas recibidas", op, op_prev, "cc_recibidas"),
+            _kpi("% de llamadas atendidas", op, op_prev, "cc_atencion", "pct", True),
+            _kpi("Quejas", op, op_prev, "cc_quejas", sube_es_bueno=False),
         ],
         "administracion": [
             _kpi("Plantilla", ad, ad_prev, "plantilla_total"),
@@ -177,13 +181,16 @@ def dashboard(request):
             _kpi("Incapacidades", ad, ad_prev, "incapacidades", sube_es_bueno=False),
             _kpi("Días de incapacidad", ad, ad_prev, "dias_incapacidad", sube_es_bueno=False),
             _kpi("Vacantes abiertas", ad, ad_prev, "vacantes", sube_es_bueno=False),
+            _kpi("Personal de vacaciones", ad, ad_prev, "vacaciones"),
+            _kpi("En capacitación", ad, ad_prev, "cap_en_curso"),
+            _kpi("Liberados de capacitación", ad, ad_prev, "cap_liberados", sube_es_bueno=True),
+            _kpi("Bajas en capacitación", ad, ad_prev, "cap_bajas", sube_es_bueno=False),
         ],
         "juridico": [
             _kpi("Audiencias", ju, ju_prev, "audiencias"),
             _kpi("Siniestros", ju, ju_prev, "siniestros", sube_es_bueno=False),
             _kpi("Personas lesionadas", ju, ju_prev, "lesionados", sube_es_bueno=False),
             _kpi("Activaciones de póliza", ju, ju_prev, "polizas_activadas", sube_es_bueno=False),
-            _kpi("Acuerdos entre particulares", ju, ju_prev, "acuerdos_particulares"),
         ],
     }
 
@@ -194,8 +201,11 @@ def dashboard(request):
             "cumplimiento": _serie(op_s, "cumplimiento"),
             "disponibles": _serie(op_s, "unidades_disponibles"),
             "inhabilitadas": _serie(op_s, "inhabilitadas"),
-            "costo": _serie(op_s, "costo_combustible"),
-            "rendimiento": _serie(op_s, "rendimiento"),
+            "litros": _serie(op_s, "litros"),
+            "consumo": _serie(op_s, "consumo_promedio"),
+            "cc_recibidas": _serie(op_s, "cc_recibidas"),
+            "cc_atendidas": _serie(op_s, "cc_atendidas"),
+            "cc_quejas": _serie(op_s, "cc_quejas"),
             "inhab_motivos": _actual(op, ["inhab_taller", "inhab_siniestro", "inhab_documentacion", "inhab_otro"]),
             "rutas": {"labels": [r.ruta for r in op.rutas.all()], "data": [r.unidades for r in op.rutas.all()]} if op else None,
         },
@@ -208,6 +218,10 @@ def dashboard(request):
             "incap_mat": _serie(ad_s, "incap_maternidad"),
             "bajas_motivos": _actual(ad, ["bajas_renuncia", "bajas_despido", "bajas_abandono", "bajas_otro"]),
             "vacantes": _actual(ad, ["vac_operador", "vac_mecanico", "vac_administrativo", "vac_otro"]),
+            "vacaciones": _actual(ad, ["vaca_adm_h", "vaca_adm_m", "vaca_ops_h", "vaca_ops_m"]),
+            "cap_curso": _serie(ad_s, "cap_en_curso"),
+            "cap_liberados": _serie(ad_s, "cap_liberados"),
+            "cap_bajas": _serie(ad_s, "cap_bajas"),
         },
         "jur": {
             "ccl": _serie(ju_s, "aud_ccl"),
@@ -216,7 +230,6 @@ def dashboard(request):
             "siniestros": _serie(ju_s, "siniestros"),
             "lesionados_serie": _serie(ju_s, "lesionados"),
             "polizas": _serie(ju_s, "polizas_activadas"),
-            "acuerdos": _serie(ju_s, "acuerdos_particulares"),
             "resp": _actual(ju, ["resp_propia", "resp_tercero", "resp_compartida", "resp_proceso"]),
             "lesionados": _actual(ju, ["les_verde", "les_amarillo", "les_rojo", "les_negro"]),
         },

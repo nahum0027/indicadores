@@ -26,10 +26,11 @@ input.num:focus,.rutas input:focus{border-color:var(--tinta);outline:none;box-sh
 {% block contenido %}
 <div class="encabezado">
   <h1>{{ cfg.nombre }}</h1>
+  <p>Responsable: {{ cfg.responsable }}</p>
   <p>Indicadores de la {{ semana_txt|lower }}{% if instancia %}. Ya hay una captura; puedes corregirla.{% endif %}</p>
   <span class="plazo{% if vencido %} vencido{% endif %}">
     {% if vencido %}El plazo cerró el {{ limite_txt }}{% if not bloqueado %}; se guardará como entrega tarde{% endif %}.
-    {% else %}Entrega antes del {{ limite_txt }}{% endif %}
+    {% else %}Captura el lunes de 9:00 a 10:00. Límite: {{ limite_txt }}{% endif %}
   </span>
 </div>
 
