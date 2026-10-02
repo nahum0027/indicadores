@@ -208,7 +208,6 @@ def dashboard(request):
             "cc_recibidas": _serie(op_s, "cc_recibidas"),
             "cc_atendidas": _serie(op_s, "cc_atendidas"),
             "cc_quejas": _serie(op_s, "cc_quejas"),
-            "inhab_motivos": _actual(op, ["inhab_taller", "inhab_siniestro", "inhab_documentacion", "inhab_otro"]),
             "rutas": {"labels": [r.ruta for r in op.rutas.all()], "data": [r.unidades for r in op.rutas.all()]} if op else None,
         },
         "adm": {

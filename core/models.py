@@ -31,10 +31,7 @@ class ReporteBase(models.Model):
 
 class ReporteOperaciones(ReporteBase):
     unidades_disponibles = entero("Unidades activas", "Unidades que salieron a ruta / en condiciones de operar")
-    inhab_taller = entero("Inactivas por taller", "Mantenimiento preventivo o correctivo")
-    inhab_siniestro = entero("Inactivas por siniestro")
-    inhab_documentacion = entero("Inactivas por documentación", "Permisos, verificación, placas, etc.")
-    inhab_otro = entero("Inactivas por otro motivo")
+    unidades_inactivas = entero("Unidades inactivas", "Unidades que no operaron (taller, siniestro, documentación, etc.)")
     corridas_programadas = entero("Corridas programadas", "Según el plan operativo de la semana")
     corridas_realizadas = entero("Corridas realizadas")
     litros = models.DecimalField("Litros", max_digits=12, decimal_places=2, default=0)
@@ -51,7 +48,7 @@ class ReporteOperaciones(ReporteBase):
 
     @property
     def inhabilitadas(self):
-        return self.inhab_taller + self.inhab_siniestro + self.inhab_documentacion + self.inhab_otro
+        return self.unidades_inactivas
 
     @property
     def flota_total(self):

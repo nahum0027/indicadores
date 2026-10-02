@@ -102,8 +102,7 @@
   <div class="graficas">
     <div class="g"><h3>Flota activa y cumplimiento del plan</h3><p>Porcentaje, últimas 12 semanas</p><div class="lienzo"><canvas id="op-pct"></canvas></div></div>
     <div class="g"><h3>Unidades activas e inactivas</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="op-unidades"></canvas></div></div>
-    <div class="g"><h3>Motivos de inactividad</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="op-motivos"></canvas></div></div>
-    <div class="g"><h3>Combustible</h3><p>Litros por semana y consumo promedio km/L</p><div class="lienzo"><canvas id="op-combustible"></canvas></div></div>
+    <div class="g ancha"><h3>Combustible</h3><p>Litros por semana y consumo promedio km/L</p><div class="lienzo"><canvas id="op-combustible"></canvas></div></div>
     <div class="g ancha"><h3>Unidades por ruta</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="op-rutas"></canvas></div></div>
     <div class="g ancha"><h3>Call Center</h3><p>Llamadas recibidas, atendidas y quejas, últimas 12 semanas</p><div class="lienzo"><canvas id="op-cc"></canvas></div></div>
   </div>
@@ -187,7 +186,6 @@ const constructores = {
     barras("op-unidades", L, [{label: "Activas", data: o.disponibles, backgroundColor: C.ops, stack: "u"},
                               {label: "Inactivas", data: o.inhabilitadas, backgroundColor: C.rojo, stack: "u"}],
            {scales: {x: {stacked: true}, y: {stacked: true, beginAtZero: true}}});
-    dona("op-motivos", ["Taller", "Siniestro", "Documentación", "Otro"], o.inhab_motivos, [C.ops, C.rojo, C.jurClaro, C.gris]);
     new Chart(document.getElementById("op-combustible"), {data: {labels: L, datasets: [
       {type: "bar", order: 1, label: "Litros", data: o.litros, backgroundColor: C.opsClaro, yAxisID: "y"},
       {type: "line", order: 0, label: "Consumo promedio km/L", data: o.consumo, borderColor: C.ops, backgroundColor: C.ops, borderWidth: 2.5, yAxisID: "y2"}]},
