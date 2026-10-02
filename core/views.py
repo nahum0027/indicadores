@@ -12,7 +12,7 @@ from django.utils import timezone
 
 from .areas import AREAS, areas_de_usuario
 from .models import Perfil, ReporteOperaciones, UnidadesRuta
-from .periodos import (etiqueta_corta, etiqueta_semana, fecha_larga, limite_de,
+from .periodos import (etiqueta_corta, etiqueta_semana, fecha_larga, limite_de, rango_dias,
                        parse_semana, periodo_actual)
 
 # ---------------------------------------------------------------- captura
@@ -68,13 +68,14 @@ def capturar(request, area):
             if formset is not None:
                 formset.instance = obj
                 formset.save()
-            messages.success(request, f"{cfg['titulo']}: indicadores guardados para la {etiqueta_semana(semana).lower()}.")
+            messages.success(request, f"{cfg['titulo']}: indicadores guardados para la {etiqueta_semana(semana, cfg['dias']).lower()}.")
             return redirect(f"/?semana={semana.isoformat()}#{area}")
         messages.error(request, "Revisa los campos marcados.")
 
     return render(request, "core/captura.html", {
         "area": area, "cfg": cfg, "form": form, "formset": formset,
-        "semana": semana, "semana_txt": etiqueta_semana(semana),
+        "semana": semana, "semana_txt": etiqueta_semana(semana, cfg["dias"]),
+        "rango_txt": rango_dias(semana, cfg["dias"]),
         "limite_txt": fecha_larga(limite), "vencido": vencido,
         "bloqueado": bloqueado, "instancia": instancia,
     })
@@ -91,12 +92,12 @@ FMT = {
 }
 
 
-def _kpi(titulo, actual, anterior, attr, fmt="int", sube_es_bueno=None, nota=""):
+def _kpi(titulo, actual, anterior, attr, fmt="int", sube_es_bueno=None, nota="", color=""):
     val = getattr(actual, attr) if actual else None
     ant = getattr(anterior, attr) if anterior else None
     f_val, f_delta = FMT[fmt]
     k = {"titulo": titulo, "valor": f_val(float(val)) if val is not None else "—",
-         "delta": None, "tono": "neutro", "nota": nota}
+         "delta": None, "tono": "neutro", "nota": nota, "color": color}
     if val is not None and ant is not None:
         d = float(val) - float(ant)
         k["delta"] = "sin cambio" if d == 0 else f_delta(d)
@@ -186,7 +187,13 @@ def dashboard(request):
         "juridico": [
             _kpi("Audiencias", ju, ju_prev, "audiencias"),
             _kpi("Siniestros", ju, ju_prev, "siniestros", sube_es_bueno=False),
+            _kpi("Siniestros responsable", ju, ju_prev, "sin_responsable", sube_es_bueno=False),
+            _kpi("Siniestros no responsable", ju, ju_prev, "sin_no_responsable"),
             _kpi("Personas lesionadas", ju, ju_prev, "lesionados", sube_es_bueno=False),
+            _kpi("Código verde", ju, ju_prev, "les_verde", sube_es_bueno=False, color="#2E9E5B"),
+            _kpi("Código amarillo", ju, ju_prev, "les_amarillo", sube_es_bueno=False, color="#E2B400"),
+            _kpi("Código rojo", ju, ju_prev, "les_rojo", sube_es_bueno=False, color="#C0392B"),
+            _kpi("Código negro", ju, ju_prev, "les_negro", sube_es_bueno=False, color="#222B33"),
             _kpi("Activaciones de póliza", ju, ju_prev, "polizas_activadas", sube_es_bueno=False),
         ],
     }
@@ -222,10 +229,11 @@ def dashboard(request):
             "ccl": _serie(ju_s, "aud_ccl"),
             "tca": _serie(ju_s, "aud_tca"),
             "juz": _serie(ju_s, "aud_juzgados"),
-            "siniestros": _serie(ju_s, "siniestros"),
+            "sin_resp": _serie(ju_s, "sin_responsable"),
+            "sin_no_resp": _serie(ju_s, "sin_no_responsable"),
             "lesionados_serie": _serie(ju_s, "lesionados"),
             "polizas": _serie(ju_s, "polizas_activadas"),
-            "resp": _actual(ju, ["resp_propia", "resp_tercero", "resp_compartida", "resp_proceso"]),
+            "resp": _actual(ju, ["sin_responsable", "sin_no_responsable"]),
             "lesionados": _actual(ju, ["les_verde", "les_amarillo", "les_rojo", "les_negro"]),
         },
     }
@@ -240,6 +248,7 @@ def dashboard(request):
         "entregas": entregas, "entregados": sum(e["estado"] in ("ok", "tarde") for e in entregas),
         "kpis": kpis, "graficas": graficas,
         "areas": [(s, c["titulo"]) for s, c in AREAS.items()],
+        "rango_juridico": rango_dias(semana, AREAS["juridico"]["dias"]),
     })
 
 

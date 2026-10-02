@@ -21,13 +21,16 @@ input.num:focus,.rutas input:focus{border-color:var(--tinta);outline:none;box-sh
 .rutas td.del{width:90px;font-size:14px;color:var(--tenue)}
 .rutas input[type=checkbox]{width:auto}
 .acciones{display:flex;gap:12px;align-items:center;max-width:760px;margin-top:24px}
+.pt{display:none}
+.pt-les_verde,.pt-les_amarillo,.pt-les_rojo,.pt-les_negro{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:7px;vertical-align:-1px}
+.pt-les_verde{background:#2E9E5B}.pt-les_amarillo{background:#E2B400}.pt-les_rojo{background:#C0392B}.pt-les_negro{background:#222B33}
 .op{border-top:4px solid var(--ops)} .ad{border-top:4px solid var(--adm)} .ju{border-top:4px solid var(--jur)}
 </style>{% endblock %}
 {% block contenido %}
 <div class="encabezado">
   <h1>{{ cfg.nombre }}</h1>
   <p>Responsable: {{ cfg.responsable }}</p>
-  <p>Indicadores de la {{ semana_txt|lower }}{% if instancia %}. Ya hay una captura; puedes corregirla.{% endif %}</p>
+  <p>Indicadores de {{ rango_txt }}{% if instancia %}. Ya hay una captura; puedes corregirla.{% endif %}</p>
   <span class="plazo{% if vencido %} vencido{% endif %}">
     {% if vencido %}El plazo cerró el {{ limite_txt }}{% if not bloqueado %}; se guardará como entrega tarde{% endif %}.
     {% else %}Captura el lunes de 9:00 a 10:00. Límite: {{ limite_txt }}{% endif %}
@@ -45,7 +48,7 @@ input.num:focus,.rutas input:focus{border-color:var(--tinta);outline:none;box-sh
     <div class="campos">
       {% for campo in campos %}
       <div class="campo">
-        <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+        <label for="{{ campo.id_for_label }}"><span class="pt pt-{{ campo.name }}"></span>{{ campo.label }}</label>
         {{ campo }}
         {% if campo.help_text %}<span class="ht">{{ campo.help_text }}</span>{% endif %}
         {{ campo.errors }}

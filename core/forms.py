@@ -51,11 +51,11 @@ class AdministracionForm(ReporteForm):
 
 class JuridicoForm(ReporteForm):
     secciones = [
-        ("Audiencias", "Audiencias atendidas en la semana, por instancia.", ["aud_ccl", "aud_tca", "aud_juzgados"]),
-        ("Siniestros", "", ["siniestros"]),
-        ("Determinación de responsabilidad", "Casos resueltos o en proceso durante la semana.",
-         ["resp_propia", "resp_tercero", "resp_compartida", "resp_proceso"]),
-        ("Personas lesionadas por código", "", ["les_verde", "les_amarillo", "les_rojo", "les_negro"]),
+        ("Audiencias", "Audiencias atendidas de lunes a domingo, por instancia.", ["aud_ccl", "aud_tca", "aud_juzgados"]),
+        ("Siniestros", "Siniestros de lunes a domingo, según la responsabilidad de la empresa.",
+         ["sin_responsable", "sin_no_responsable"]),
+        ("Personas lesionadas por código", "Personas lesionadas en los siniestros de la semana.",
+         ["les_verde", "les_amarillo", "les_rojo", "les_negro"]),
         ("Pólizas", "", ["polizas_activadas"]),
     ]
 

@@ -119,15 +119,12 @@ class ReporteJuridico(ReporteBase):
     aud_ccl = entero("Centro de Conciliación Laboral del Estado de Qro.")
     aud_tca = entero("Tribunal de Conciliación y Arbitraje del Estado de Qro.")
     aud_juzgados = entero("Juzgados Laborales del Estado de Qro.")
-    siniestros = entero("Número de siniestros")
-    resp_propia = entero("Responsabilidad de la empresa")
-    resp_tercero = entero("Responsabilidad de terceros")
-    resp_compartida = entero("Responsabilidad compartida")
-    resp_proceso = entero("En determinación")
-    les_verde = entero("Código verde")
-    les_amarillo = entero("Código amarillo")
-    les_rojo = entero("Código rojo")
-    les_negro = entero("Código negro")
+    sin_responsable = entero("Responsable", "Siniestros en los que la empresa resultó responsable")
+    sin_no_responsable = entero("No responsable", "Siniestros en los que la empresa no resultó responsable")
+    les_verde = entero("Código verde", "Lesiones leves")
+    les_amarillo = entero("Código amarillo", "Lesiones moderadas")
+    les_rojo = entero("Código rojo", "Lesiones graves")
+    les_negro = entero("Código negro", "Personas fallecidas")
     polizas_activadas = entero("Activaciones de póliza")
 
     class Meta(ReporteBase.Meta):
@@ -137,6 +134,10 @@ class ReporteJuridico(ReporteBase):
     @property
     def audiencias(self):
         return self.aud_ccl + self.aud_tca + self.aud_juzgados
+
+    @property
+    def siniestros(self):
+        return self.sin_responsable + self.sin_no_responsable
 
     @property
     def lesionados(self):

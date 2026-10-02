@@ -50,8 +50,7 @@ class Command(BaseCommand):
                 cap_en_curso=r.randint(10, 25), cap_liberados=r.randint(3, 10)))
             sin = r.randint(2, 9)
             ReporteJuridico.objects.update_or_create(semana=s, defaults=dict(
-                aud_ccl=r.randint(1, 6), aud_tca=r.randint(0, 3), aud_juzgados=r.randint(0, 4), siniestros=sin,
-                resp_propia=r.randint(0, sin // 2), resp_tercero=r.randint(0, sin // 2), resp_compartida=r.randint(0, 1),
-                resp_proceso=r.randint(0, 2), les_verde=r.randint(0, 5), les_amarillo=r.randint(0, 2),
+                aud_ccl=r.randint(1, 6), aud_tca=r.randint(0, 3), aud_juzgados=r.randint(0, 4), sin_responsable=(sr := r.randint(0, sin)), sin_no_responsable=sin - sr,
+                les_verde=r.randint(0, 5), les_amarillo=r.randint(0, 2),
                 les_rojo=r.randint(0, 1), les_negro=0, polizas_activadas=r.randint(0, sin)))
         self.stdout.write(self.style.SUCCESS(f"Datos demo listos ({12 - inicio} semanas)."))

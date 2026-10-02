@@ -36,14 +36,21 @@ def parse_semana(texto):
         return None
 
 
-def etiqueta_semana(s: date) -> str:
-    fin = s + timedelta(days=4)  # lunes a viernes
+def etiqueta_semana(s: date, dias: int = 5) -> str:
+    """dias=5: lunes a viernes; dias=7: lunes a domingo (Jurídica)."""
+    fin = s + timedelta(days=dias - 1)
     num = s.isocalendar()[1]
     if s.month == fin.month:
         rango = f"{s.day}–{fin.day} {MESES[s.month - 1]}"
     else:
         rango = f"{s.day} {MESES[s.month - 1]} – {fin.day} {MESES[fin.month - 1]}"
     return f"Semana {num}, {rango} {fin.year}"
+
+
+def rango_dias(s: date, dias: int) -> str:
+    fin = s + timedelta(days=dias - 1)
+    nombres = {5: "lunes a viernes", 7: "lunes a domingo"}
+    return f"{nombres.get(dias, '')}, {s.day} {MESES[s.month - 1]} – {fin.day} {MESES[fin.month - 1]}"
 
 
 def etiqueta_corta(s: date) -> str:

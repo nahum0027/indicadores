@@ -48,6 +48,7 @@
 .panel[data-area=administracion] .kpis{border-top:4px solid var(--adm)}
 .panel[data-area=juridico] .kpis{border-top:4px solid var(--jur)}
 
+.nota-periodo{margin:-6px 0 14px;color:var(--tenue)}
 .graficas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
 .g{background:#fff;border:1px solid var(--linea);border-radius:14px;padding:18px 20px}
 .g.ancha{grid-column:1/-1}
@@ -122,12 +123,14 @@
 </section>
 
 <section class="panel" id="panel-juridico" data-area="juridico" role="tabpanel" hidden>
+  <p class="nota-periodo">Jurídica incluye fines de semana: {{ rango_juridico }}.</p>
   {% include "core/_kpis.html" with lista=kpis.juridico %}
   <div class="graficas">
     <div class="g ancha"><h3>Audiencias por instancia</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ju-aud"></canvas></div></div>
     <div class="g"><h3>Personas lesionadas por código</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ju-les"></canvas></div></div>
-    <div class="g"><h3>Determinación de responsabilidad</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ju-resp"></canvas></div></div>
-    <div class="g ancha"><h3>Siniestros, lesionados y activaciones de póliza</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ju-sin"></canvas></div></div>
+    <div class="g"><h3>Siniestros por responsabilidad</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ju-resp"></canvas></div></div>
+    <div class="g"><h3>Siniestros por semana</h3><p>Responsable y no responsable, últimas 12 semanas</p><div class="lienzo"><canvas id="ju-sin"></canvas></div></div>
+    <div class="g"><h3>Lesionados y activaciones de póliza</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ju-les-serie"></canvas></div></div>
   </div>
 </section>
 
@@ -241,10 +244,13 @@ const constructores = {
     else barras("ju-les", ["Verde", "Amarillo", "Rojo", "Negro"],
                 [{label: "Personas", data: j.lesionados, backgroundColor: [C.verde, C.amarillo, C.rojo, C.negro]}],
                 {plugins: {legend: {display: false}}, scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
-    dona("ju-resp", ["De la empresa", "De terceros", "Compartida", "En determinación"], j.resp, [C.rojo, C.ops, C.jurClaro, C.gris]);
-    linea("ju-sin", [{label: "Siniestros", data: j.siniestros, color: C.jur},
-                     {label: "Personas lesionadas", data: j.lesionados_serie, color: C.rojo},
-                     {label: "Activaciones de póliza", data: j.polizas, color: C.negro}],
+    dona("ju-resp", ["Responsable", "No responsable"], j.resp, [C.rojo, C.ops]);
+    barras("ju-sin", L, [
+      {label: "Responsable", data: j.sin_resp, backgroundColor: C.rojo, stack: "s"},
+      {label: "No responsable", data: j.sin_no_resp, backgroundColor: C.ops, stack: "s"}],
+      {scales: {x: {stacked: true}, y: {stacked: true, beginAtZero: true, ticks: {precision: 0}}}});
+    linea("ju-les-serie", [{label: "Personas lesionadas", data: j.lesionados_serie, color: C.rojo},
+                           {label: "Activaciones de póliza", data: j.polizas, color: C.negro}],
           {scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
   },
 };

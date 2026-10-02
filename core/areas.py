@@ -4,15 +4,15 @@ from .models import ReporteAdministracion, ReporteJuridico, ReporteOperaciones
 # slug -> configuración. El "grupo" es el nombre del grupo de Django que puede capturar.
 AREAS = {
     "operaciones": {
-        "titulo": "Operaciones", "nombre": "Dirección de Operaciones", "responsable": "Héctor Hernández Vázquez", "grupo": "Operaciones",
+        "titulo": "Operaciones", "nombre": "Dirección de Operaciones", "responsable": "Héctor Hernández Vázquez", "grupo": "Operaciones", "dias": 5,
         "modelo": ReporteOperaciones, "form": OperacionesForm,
     },
     "administracion": {
-        "titulo": "Administración", "nombre": "Dirección de Administración", "responsable": "José Alberto Baeza Ponce", "grupo": "Administracion",
+        "titulo": "Administración", "nombre": "Dirección de Administración", "responsable": "José Alberto Baeza Ponce", "grupo": "Administracion", "dias": 5,
         "modelo": ReporteAdministracion, "form": AdministracionForm,
     },
     "juridico": {
-        "titulo": "Jurídica", "nombre": "Dirección Jurídica", "responsable": "Arturo Eduardo Pérez Cruz", "grupo": "Juridico",
+        "titulo": "Jurídica", "nombre": "Dirección Jurídica", "responsable": "Arturo Eduardo Pérez Cruz", "grupo": "Juridico", "dias": 7,  # Jurídica sí incluye sábado y domingo
         "modelo": ReporteJuridico, "form": JuridicoForm,
     },
 }
