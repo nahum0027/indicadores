@@ -31,13 +31,11 @@ class ReporteBase(models.Model):
 
 class ReporteOperaciones(ReporteBase):
     unidades_disponibles = entero("Unidades activas", "Unidades que salieron a ruta / en condiciones de operar")
-    unidades_inactivas = entero("Unidades inactivas", "Unidades que no operaron (taller, siniestro, documentación, etc.)")
-    corridas_programadas = entero("Corridas programadas", "Según el plan operativo de la semana")
-    corridas_realizadas = entero("Corridas realizadas")
-    litros = models.DecimalField("Litros", max_digits=12, decimal_places=2, default=0)
-    cargas = entero("Cargas de combustible", "Número de cargas realizadas en la semana")
-    consumo_promedio = models.DecimalField("Consumo promedio (km/L)", max_digits=6, decimal_places=2, default=0,
-                                           help_text="Kilómetros por litro promedio de la flota")
+    unidades_plan = entero("Unidades en el plan operativo", "Unidades que salen según el plan operativo de la semana")
+    litros = models.DecimalField("Litros de diésel", max_digits=12, decimal_places=2, default=0)
+    sup_rutas = entero("Supervisores", "Supervisores que se subieron a rutas en la semana")
+    coord_rutas = entero("Coordinadores", "Coordinadores que se subieron a rutas en la semana")
+    aux_rutas = entero("Auxiliares", "Auxiliares que se subieron a rutas en la semana")
     cc_recibidas = entero("Llamadas recibidas")
     cc_atendidas = entero("Llamadas atendidas")
     cc_quejas = entero("Quejas registradas")
@@ -47,24 +45,8 @@ class ReporteOperaciones(ReporteBase):
         verbose_name_plural = "reportes de Operaciones"
 
     @property
-    def inhabilitadas(self):
-        return self.unidades_inactivas
-
-    @property
-    def flota_total(self):
-        return self.unidades_disponibles + self.inhabilitadas
-
-    @property
-    def disponibilidad(self):
-        return pct(self.unidades_disponibles, self.flota_total)
-
-    @property
-    def cumplimiento(self):
-        return pct(self.corridas_realizadas, self.corridas_programadas)
-
-    @property
-    def litros_por_carga(self):
-        return round(float(self.litros) / self.cargas, 1) if self.cargas else None
+    def personal_rutas(self):
+        return self.sup_rutas + self.coord_rutas + self.aux_rutas
 
     @property
     def cc_atencion(self):

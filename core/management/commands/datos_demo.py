@@ -30,9 +30,8 @@ class Command(BaseCommand):
             prog = r.randint(5200, 5400)
             litros = r.randint(40000, 45000)
             op, _ = ReporteOperaciones.objects.update_or_create(semana=s, defaults=dict(
-                unidades_disponibles=disp, unidades_inactivas=sum(inhab),
-                corridas_programadas=prog, corridas_realizadas=int(prog * r.uniform(.9, .99)),
-                litros=litros, cargas=r.randint(820, 880), consumo_promedio=round(r.uniform(2.6, 3.0), 2),
+                unidades_disponibles=disp, unidades_plan=r.randint(165, 172), litros=litros,
+                sup_rutas=r.randint(4, 12), coord_rutas=r.randint(1, 5), aux_rutas=r.randint(6, 18),
                 cc_recibidas=(rec := r.randint(380, 470)), cc_atendidas=int(rec * r.uniform(.86, .97)), cc_quejas=r.randint(8, 30),
                 tarde=(i == 3)))
             op.rutas.all().delete()

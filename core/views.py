@@ -163,14 +163,10 @@ def dashboard(request):
 
     kpis = {
         "operaciones": [
-            _kpi("Flota total", op, op_prev, "flota_total"),
             _kpi("Unidades activas", op, op_prev, "unidades_disponibles", sube_es_bueno=True),
-            _kpi("Unidades inactivas", op, op_prev, "inhabilitadas", sube_es_bueno=False),
-            _kpi("Flota activa", op, op_prev, "disponibilidad", "pct", True),
-            _kpi("Cumplimiento del plan", op, op_prev, "cumplimiento", "pct", True),
-            _kpi("Litros de combustible", op, op_prev, "litros", sube_es_bueno=False),
-            _kpi("Cargas", op, op_prev, "cargas"),
-            _kpi("Consumo promedio km/L", op, op_prev, "consumo_promedio", "dec", True),
+            _kpi("Unidades en plan operativo", op, op_prev, "unidades_plan"),
+            _kpi("Litros de diésel", op, op_prev, "litros", sube_es_bueno=False),
+            _kpi("Personal en rutas", op, op_prev, "personal_rutas", sube_es_bueno=True),
             _kpi("Llamadas recibidas", op, op_prev, "cc_recibidas"),
             _kpi("% de llamadas atendidas", op, op_prev, "cc_atencion", "pct", True),
             _kpi("Quejas", op, op_prev, "cc_quejas", sube_es_bueno=False),
@@ -199,12 +195,12 @@ def dashboard(request):
     graficas = {
         "labels": [etiqueta_corta(s) for s in semanas],
         "ops": {
-            "disponibilidad": _serie(op_s, "disponibilidad"),
-            "cumplimiento": _serie(op_s, "cumplimiento"),
             "disponibles": _serie(op_s, "unidades_disponibles"),
-            "inhabilitadas": _serie(op_s, "inhabilitadas"),
+            "plan": _serie(op_s, "unidades_plan"),
             "litros": _serie(op_s, "litros"),
-            "consumo": _serie(op_s, "consumo_promedio"),
+            "sup": _serie(op_s, "sup_rutas"),
+            "coord": _serie(op_s, "coord_rutas"),
+            "aux": _serie(op_s, "aux_rutas"),
             "cc_recibidas": _serie(op_s, "cc_recibidas"),
             "cc_atendidas": _serie(op_s, "cc_atendidas"),
             "cc_quejas": _serie(op_s, "cc_quejas"),

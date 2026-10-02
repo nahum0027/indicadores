@@ -24,10 +24,9 @@ class ReporteForm(forms.ModelForm):
 
 class OperacionesForm(ReporteForm):
     secciones = [
-        ("Unidades activas e inactivas", "Estado de la flota en la semana.",
-         ["unidades_disponibles", "unidades_inactivas"]),
-        ("Plan operativo", "", ["corridas_programadas", "corridas_realizadas"]),
-        ("Combustible", "Totales de lunes a viernes.", ["litros", "cargas", "consumo_promedio"]),
+        ("Unidades", "", ["unidades_disponibles", "unidades_plan"]),
+        ("Combustible", "Total de lunes a viernes.", ["litros"]),
+        ("Personal que se subió a rutas", "", ["sup_rutas", "coord_rutas", "aux_rutas"]),
         ("Call Center", "", ["cc_recibidas", "cc_atendidas", "cc_quejas"]),
     ]
 

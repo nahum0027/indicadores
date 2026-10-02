@@ -100,9 +100,9 @@
 <section class="panel" id="panel-operaciones" data-area="operaciones" role="tabpanel" hidden>
   {% include "core/_kpis.html" with lista=kpis.operaciones %}
   <div class="graficas">
-    <div class="g"><h3>Flota activa y cumplimiento del plan</h3><p>Porcentaje, últimas 12 semanas</p><div class="lienzo"><canvas id="op-pct"></canvas></div></div>
-    <div class="g"><h3>Unidades activas e inactivas</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="op-unidades"></canvas></div></div>
-    <div class="g ancha"><h3>Combustible</h3><p>Litros por semana y consumo promedio km/L</p><div class="lienzo"><canvas id="op-combustible"></canvas></div></div>
+    <div class="g"><h3>Unidades activas y del plan operativo</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="op-unidades"></canvas></div></div>
+    <div class="g"><h3>Personal que se subió a rutas</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="op-personal"></canvas></div></div>
+    <div class="g ancha"><h3>Combustible</h3><p>Litros de diésel por semana</p><div class="lienzo"><canvas id="op-combustible"></canvas></div></div>
     <div class="g ancha"><h3>Unidades por ruta</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="op-rutas"></canvas></div></div>
     <div class="g ancha"><h3>Call Center</h3><p>Llamadas recibidas, atendidas y quejas, últimas 12 semanas</p><div class="lienzo"><canvas id="op-cc"></canvas></div></div>
   </div>
@@ -181,16 +181,17 @@ const pct = {scales: {y: {suggestedMax: 100, ticks: {callback: v => v + "%"}}},
 const constructores = {
   operaciones() {
     const o = D.ops;
-    linea("op-pct", [{label: "Flota activa", data: o.disponibilidad, color: C.ops},
-                     {label: "Cumplimiento del plan", data: o.cumplimiento, color: C.azul}], pct);
-    barras("op-unidades", L, [{label: "Activas", data: o.disponibles, backgroundColor: C.ops, stack: "u"},
-                              {label: "Inactivas", data: o.inhabilitadas, backgroundColor: C.rojo, stack: "u"}],
-           {scales: {x: {stacked: true}, y: {stacked: true, beginAtZero: true}}});
-    new Chart(document.getElementById("op-combustible"), {data: {labels: L, datasets: [
-      {type: "bar", order: 1, label: "Litros", data: o.litros, backgroundColor: C.opsClaro, yAxisID: "y"},
-      {type: "line", order: 0, label: "Consumo promedio km/L", data: o.consumo, borderColor: C.ops, backgroundColor: C.ops, borderWidth: 2.5, yAxisID: "y2"}]},
-      options: {scales: {y: {beginAtZero: true, ticks: {callback: v => Number(v).toLocaleString("es-MX") + " L"}},
-                         y2: {position: "right", grid: {display: false}, title: {display: true, text: "km/L"}}}}});
+    barras("op-unidades", L, [{label: "Activas", data: o.disponibles, backgroundColor: C.ops},
+                              {label: "Plan operativo", data: o.plan, backgroundColor: C.opsClaro}],
+           {scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
+    barras("op-personal", L, [
+      {label: "Supervisores", data: o.sup, backgroundColor: C.ops, stack: "p"},
+      {label: "Coordinadores", data: o.coord, backgroundColor: C.azul, stack: "p"},
+      {label: "Auxiliares", data: o.aux, backgroundColor: C.opsClaro, stack: "p"}],
+      {scales: {x: {stacked: true}, y: {stacked: true, beginAtZero: true, ticks: {precision: 0}}}});
+    barras("op-combustible", L, [{label: "Litros", data: o.litros, backgroundColor: C.opsClaro}],
+           {plugins: {legend: {display: false}},
+            scales: {y: {beginAtZero: true, ticks: {callback: v => Number(v).toLocaleString("es-MX") + " L"}}}});
     if (!o.rutas || !o.rutas.labels.length) vacio("op-rutas");
     else barras("op-rutas", o.rutas.labels, [{label: "Unidades", data: o.rutas.data, backgroundColor: C.ops}],
                 {plugins: {legend: {display: false}}, scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
