@@ -69,7 +69,8 @@ class UnidadesRuta(models.Model):
 
 
 class ReporteAdministracion(ReporteBase):
-    plantilla_total = entero("Plantilla total al cierre", "Personas activas al viernes")
+    plantilla_hombres = entero("Hombres", "Hombres en plantilla al viernes")
+    plantilla_mujeres = entero("Mujeres", "Mujeres en plantilla al viernes")
     altas = entero("Altas")
     bajas_renuncia = entero("Bajas por renuncia")
     bajas_despido = entero("Bajas por despido")
@@ -78,7 +79,6 @@ class ReporteAdministracion(ReporteBase):
     incap_enfermedad = entero("Incapacidades por enfermedad general")
     incap_riesgo = entero("Incapacidades por riesgo de trabajo")
     incap_maternidad = entero("Incapacidades por maternidad")
-    dias_incapacidad = entero("Días de incapacidad acumulados", "Suma de días de todas las incapacidades de la semana")
     vac_operador = entero("Vacantes de operador")
     vac_mecanico = entero("Vacantes de mecánico")
     vac_administrativo = entero("Vacantes administrativas")
@@ -89,7 +89,6 @@ class ReporteAdministracion(ReporteBase):
     vaca_ops_m = entero("Operaciones: mujeres")
     cap_en_curso = entero("Personal en capacitación")
     cap_liberados = entero("Liberados")
-    cap_bajas = entero("Bajas en capacitación")
 
     class Meta(ReporteBase.Meta):
         verbose_name = "reporte de Administración"
@@ -112,8 +111,8 @@ class ReporteAdministracion(ReporteBase):
         return self.vaca_adm_h + self.vaca_adm_m + self.vaca_ops_h + self.vaca_ops_m
 
     @property
-    def rotacion(self):
-        return pct(self.bajas, self.plantilla_total)
+    def plantilla_total(self):
+        return self.plantilla_hombres + self.plantilla_mujeres
 
 
 class ReporteJuridico(ReporteBase):

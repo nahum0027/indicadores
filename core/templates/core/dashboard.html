@@ -111,12 +111,13 @@
 <section class="panel" id="panel-administracion" data-area="administracion" role="tabpanel" hidden>
   {% include "core/_kpis.html" with lista=kpis.administracion %}
   <div class="graficas">
-    <div class="g"><h3>Altas y bajas</h3><p>Últimas 12 semanas, con rotación semanal</p><div class="lienzo"><canvas id="ad-movs"></canvas></div></div>
+    <div class="g"><h3>Personal por sexo</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ad-sexo"></canvas></div></div>
+    <div class="g"><h3>Altas y bajas</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ad-movs"></canvas></div></div>
     <div class="g"><h3>Motivos de baja</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ad-bajas"></canvas></div></div>
     <div class="g"><h3>Incapacidades por tipo</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ad-incap"></canvas></div></div>
     <div class="g"><h3>Vacantes abiertas por puesto</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ad-vac"></canvas></div></div>
     <div class="g"><h3>Vacaciones por área y sexo</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="ad-vacaciones"></canvas></div></div>
-    <div class="g"><h3>Capacitación</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ad-cap"></canvas></div></div>
+    <div class="g ancha"><h3>Capacitación</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="ad-cap"></canvas></div></div>
   </div>
 </section>
 
@@ -204,12 +205,10 @@ const constructores = {
   },
   administracion() {
     const a = D.adm;
-    new Chart(document.getElementById("ad-movs"), {data: {labels: L, datasets: [
-      {type: "bar", order: 1, label: "Altas", data: a.altas, backgroundColor: C.adm},
-      {type: "bar", order: 1, label: "Bajas", data: a.bajas, backgroundColor: C.rojo},
-      {type: "line", order: 0, label: "Rotación %", data: a.rotacion, borderColor: C.negro, backgroundColor: C.negro, borderWidth: 2, yAxisID: "y2"}]},
-      options: {scales: {y: {beginAtZero: true, ticks: {precision: 0}},
-                         y2: {position: "right", beginAtZero: true, grid: {display: false}, ticks: {callback: v => v + "%"}}}}});
+    dona("ad-sexo", ["Hombres", "Mujeres"], a.sexo, [C.adm, C.admClaro]);
+    barras("ad-movs", L, [{label: "Altas", data: a.altas, backgroundColor: C.adm},
+                          {label: "Bajas", data: a.bajas, backgroundColor: C.rojo}],
+           {scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
     dona("ad-bajas", ["Renuncia", "Despido", "Abandono", "Otro"], a.bajas_motivos, [C.adm, C.rojo, C.jur, C.gris]);
     barras("ad-incap", L, [
       {label: "Enfermedad general", data: a.incap_enf, backgroundColor: C.adm, stack: "i"},
@@ -228,8 +227,7 @@ const constructores = {
       {scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
     barras("ad-cap", L, [
       {label: "En capacitación", data: a.cap_curso, backgroundColor: C.admClaro},
-      {label: "Liberados", data: a.cap_liberados, backgroundColor: C.adm},
-      {label: "Bajas", data: a.cap_bajas, backgroundColor: C.rojo}],
+      {label: "Liberados", data: a.cap_liberados, backgroundColor: C.adm}],
       {scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
   },
   juridico() {

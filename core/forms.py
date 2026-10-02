@@ -36,13 +36,13 @@ class OperacionesForm(ReporteForm):
 
 class AdministracionForm(ReporteForm):
     secciones = [
-        ("Plantilla", "", ["plantilla_total"]),
+        ("Personal", "Personas en plantilla al cierre de la semana.", ["plantilla_hombres", "plantilla_mujeres"]),
         ("Altas y bajas", "", ["altas", "bajas_renuncia", "bajas_despido", "bajas_abandono", "bajas_otro"]),
         ("Incapacidades", "Número de incapacidades iniciadas en la semana.",
-         ["incap_enfermedad", "incap_riesgo", "incap_maternidad", "dias_incapacidad"]),
+         ["incap_enfermedad", "incap_riesgo", "incap_maternidad"]),
         ("Vacantes", "Vacantes abiertas al cierre.", ["vac_operador", "vac_mecanico", "vac_administrativo", "vac_otro"]),
         ("Vacaciones", "Personas que tomaron vacaciones en la semana.", ["vaca_adm_h", "vaca_adm_m", "vaca_ops_h", "vaca_ops_m"]),
-        ("Capacitación", "", ["cap_en_curso", "cap_liberados", "cap_bajas"]),
+        ("Capacitación", "", ["cap_en_curso", "cap_liberados"]),
     ]
 
     class Meta(ReporteForm.Meta):

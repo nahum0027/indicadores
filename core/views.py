@@ -172,17 +172,16 @@ def dashboard(request):
             _kpi("Quejas", op, op_prev, "cc_quejas", sube_es_bueno=False),
         ],
         "administracion": [
-            _kpi("Plantilla", ad, ad_prev, "plantilla_total"),
+            _kpi("Personal total", ad, ad_prev, "plantilla_total"),
+            _kpi("Hombres", ad, ad_prev, "plantilla_hombres"),
+            _kpi("Mujeres", ad, ad_prev, "plantilla_mujeres"),
             _kpi("Altas", ad, ad_prev, "altas"),
             _kpi("Bajas", ad, ad_prev, "bajas", sube_es_bueno=False),
-            _kpi("Rotación semanal", ad, ad_prev, "rotacion", "pct", False),
             _kpi("Incapacidades", ad, ad_prev, "incapacidades", sube_es_bueno=False),
-            _kpi("Días de incapacidad", ad, ad_prev, "dias_incapacidad", sube_es_bueno=False),
             _kpi("Vacantes abiertas", ad, ad_prev, "vacantes", sube_es_bueno=False),
             _kpi("Personal de vacaciones", ad, ad_prev, "vacaciones"),
             _kpi("En capacitación", ad, ad_prev, "cap_en_curso"),
             _kpi("Liberados de capacitación", ad, ad_prev, "cap_liberados", sube_es_bueno=True),
-            _kpi("Bajas en capacitación", ad, ad_prev, "cap_bajas", sube_es_bueno=False),
         ],
         "juridico": [
             _kpi("Audiencias", ju, ju_prev, "audiencias"),
@@ -209,7 +208,7 @@ def dashboard(request):
         "adm": {
             "altas": _serie(ad_s, "altas"),
             "bajas": _serie(ad_s, "bajas"),
-            "rotacion": _serie(ad_s, "rotacion"),
+            "sexo": _actual(ad, ["plantilla_hombres", "plantilla_mujeres"]),
             "incap_enf": _serie(ad_s, "incap_enfermedad"),
             "incap_riesgo": _serie(ad_s, "incap_riesgo"),
             "incap_mat": _serie(ad_s, "incap_maternidad"),
@@ -218,7 +217,6 @@ def dashboard(request):
             "vacaciones": _actual(ad, ["vaca_adm_h", "vaca_adm_m", "vaca_ops_h", "vaca_ops_m"]),
             "cap_curso": _serie(ad_s, "cap_en_curso"),
             "cap_liberados": _serie(ad_s, "cap_liberados"),
-            "cap_bajas": _serie(ad_s, "cap_bajas"),
         },
         "jur": {
             "ccl": _serie(ju_s, "aud_ccl"),
