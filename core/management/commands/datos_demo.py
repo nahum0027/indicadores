@@ -33,7 +33,7 @@ class Command(BaseCommand):
                 unidades_disponibles=disp, unidades_plan=r.randint(165, 172), litros=litros,
                 sup_rutas=r.randint(4, 12), coord_rutas=r.randint(1, 5), aux_rutas=r.randint(6, 18),
                 cc_recibidas=(rec := r.randint(380, 470)), cc_atendidas=int(rec * r.uniform(.86, .97)), cc_quejas=(qq := r.randint(8, 30)), q_parada=(q1 := r.randint(0, qq // 3)), q_frecuencia=(q2 := r.randint(0, qq // 3)),
-                q_imprudente=(q3 := r.randint(0, (qq - q1 - q2) // 2)), q_semaforo=r.randint(0, qq - q1 - q2 - q3),
+                q_imprudente=r.randint(0, (qq - q1 - q2) // 2),
                 tarde=(i == 3)))
             op.rutas.all().delete()
             restantes = disp

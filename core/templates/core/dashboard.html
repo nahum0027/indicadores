@@ -209,8 +209,8 @@ const constructores = {
     const q = o.quejas_motivos;
     if (!q) vacio("op-quejas");
     else if (q.every(v => !v)) vacio("op-quejas", "Sin quejas esta semana");
-    else barras("op-quejas", ["No respeta parada", "Frecuencia", "Manejo imprudente", "No respeta semáforo", "Otros"],
-                [{label: "Quejas", data: q, backgroundColor: [C.rojo, C.jur, C.negro, C.amarillo, C.gris]}],
+    else barras("op-quejas", ["No respeta parada", "Frecuencia", "Manejo imprudente", "Otros"],
+                [{label: "Quejas", data: q, backgroundColor: [C.rojo, C.jur, C.negro, C.gris]}],
                 {indexAxis: "y", plugins: {legend: {display: false}}, scales: {x: {beginAtZero: true, ticks: {precision: 0}}}});
   },
   administracion() {

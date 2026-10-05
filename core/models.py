@@ -42,7 +42,6 @@ class ReporteOperaciones(ReporteBase):
     q_parada = entero("No respeta parada")
     q_frecuencia = entero("Frecuencia")
     q_imprudente = entero("Manejo imprudente")
-    q_semaforo = entero("No respeta semáforo")
 
     class Meta(ReporteBase.Meta):
         verbose_name = "reporte de Operaciones"
@@ -54,7 +53,7 @@ class ReporteOperaciones(ReporteBase):
 
     @property
     def quejas_otras(self):
-        return max(self.cc_quejas - (self.q_parada + self.q_frecuencia + self.q_imprudente + self.q_semaforo), 0)
+        return max(self.cc_quejas - (self.q_parada + self.q_frecuencia + self.q_imprudente), 0)
 
     @property
     def cc_atencion(self):

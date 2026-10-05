@@ -29,7 +29,7 @@ class OperacionesForm(ReporteForm):
         ("Personal que se subió a rutas", "", ["sup_rutas", "coord_rutas", "aux_rutas"]),
         ("Call Center", "", ["cc_recibidas", "cc_atendidas", "cc_quejas"]),
         ("Principales motivos de queja", "Cuántas de las quejas registradas fueron por cada motivo. El resto se cuenta como \"otros\".",
-         ["q_parada", "q_frecuencia", "q_imprudente", "q_semaforo"]),
+         ["q_parada", "q_frecuencia", "q_imprudente"]),
     ]
 
     class Meta(ReporteForm.Meta):
@@ -37,7 +37,7 @@ class OperacionesForm(ReporteForm):
 
     def clean(self):
         datos = super().clean()
-        motivos = sum(datos.get(c) or 0 for c in ("q_parada", "q_frecuencia", "q_imprudente", "q_semaforo"))
+        motivos = sum(datos.get(c) or 0 for c in ("q_parada", "q_frecuencia", "q_imprudente"))
         total = datos.get("cc_quejas") or 0
         if motivos > total:
             self.add_error("cc_quejas", f"La suma de los motivos ({motivos}) no puede ser mayor que el total de quejas.")
