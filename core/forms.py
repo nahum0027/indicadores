@@ -28,10 +28,22 @@ class OperacionesForm(ReporteForm):
         ("Combustible", "Total de lunes a viernes.", ["litros"]),
         ("Personal que se subió a rutas", "", ["sup_rutas", "coord_rutas", "aux_rutas"]),
         ("Call Center", "", ["cc_recibidas", "cc_atendidas", "cc_quejas"]),
+        ("Principales motivos de queja", "Cuántas de las quejas registradas fueron por cada motivo. El resto se cuenta como \"otros\".",
+         ["q_parada", "q_frecuencia", "q_imprudente", "q_semaforo"]),
     ]
 
     class Meta(ReporteForm.Meta):
         model = ReporteOperaciones
+
+    def clean(self):
+        datos = super().clean()
+        motivos = sum(datos.get(c) or 0 for c in ("q_parada", "q_frecuencia", "q_imprudente", "q_semaforo"))
+        total = datos.get("cc_quejas") or 0
+        if motivos > total:
+            self.add_error("cc_quejas", f"La suma de los motivos ({motivos}) no puede ser mayor que el total de quejas.")
+        if (datos.get("cc_atendidas") or 0) > (datos.get("cc_recibidas") or 0):
+            self.add_error("cc_atendidas", "No puede haber más llamadas atendidas que recibidas.")
+        return datos
 
 
 class AdministracionForm(ReporteForm):

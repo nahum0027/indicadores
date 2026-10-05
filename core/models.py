@@ -38,7 +38,11 @@ class ReporteOperaciones(ReporteBase):
     aux_rutas = entero("Auxiliares", "Auxiliares que se subieron a rutas en la semana")
     cc_recibidas = entero("Llamadas recibidas")
     cc_atendidas = entero("Llamadas atendidas")
-    cc_quejas = entero("Quejas registradas")
+    cc_quejas = entero("Quejas registradas", "Total de quejas de la semana")
+    q_parada = entero("No respeta parada")
+    q_frecuencia = entero("Frecuencia")
+    q_imprudente = entero("Manejo imprudente")
+    q_semaforo = entero("No respeta semáforo")
 
     class Meta(ReporteBase.Meta):
         verbose_name = "reporte de Operaciones"
@@ -47,6 +51,10 @@ class ReporteOperaciones(ReporteBase):
     @property
     def personal_rutas(self):
         return self.sup_rutas + self.coord_rutas + self.aux_rutas
+
+    @property
+    def quejas_otras(self):
+        return max(self.cc_quejas - (self.q_parada + self.q_frecuencia + self.q_imprudente + self.q_semaforo), 0)
 
     @property
     def cc_atencion(self):

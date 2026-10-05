@@ -210,6 +210,7 @@ def dashboard(request):
             "cc_recibidas": _serie(op_s, "cc_recibidas"),
             "cc_atendidas": _serie(op_s, "cc_atendidas"),
             "cc_quejas": _serie(op_s, "cc_quejas"),
+            "quejas_motivos": _actual(op, ["q_parada", "q_frecuencia", "q_imprudente", "q_semaforo", "quejas_otras"]),
             "rutas": {"labels": [r.ruta for r in op.rutas.all()], "data": [r.unidades for r in op.rutas.all()]} if op else None,
         },
         "adm": {

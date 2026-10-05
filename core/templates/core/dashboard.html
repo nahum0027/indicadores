@@ -105,7 +105,8 @@
     <div class="g"><h3>Personal que se subió a rutas</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="op-personal"></canvas></div></div>
     <div class="g ancha"><h3>Combustible</h3><p>Litros de diésel por semana</p><div class="lienzo"><canvas id="op-combustible"></canvas></div></div>
     <div class="g ancha"><h3>Unidades por ruta</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="op-rutas"></canvas></div></div>
-    <div class="g ancha"><h3>Call Center</h3><p>Llamadas recibidas, atendidas y quejas, últimas 12 semanas</p><div class="lienzo"><canvas id="op-cc"></canvas></div></div>
+    <div class="g"><h3>Call Center</h3><p>Llamadas recibidas, atendidas y quejas, últimas 12 semanas</p><div class="lienzo"><canvas id="op-cc"></canvas></div></div>
+    <div class="g"><h3>Quejas por motivo</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="op-quejas"></canvas></div></div>
   </div>
 </section>
 
@@ -205,6 +206,12 @@ const constructores = {
       {type: "line", order: 0, label: "Quejas", data: o.cc_quejas, borderColor: C.rojo, backgroundColor: C.rojo, borderWidth: 2.5, yAxisID: "y2"}]},
       options: {scales: {y: {beginAtZero: true, ticks: {precision: 0}},
                          y2: {position: "right", beginAtZero: true, grid: {display: false}, ticks: {precision: 0}, title: {display: true, text: "Quejas"}}}}});
+    const q = o.quejas_motivos;
+    if (!q) vacio("op-quejas");
+    else if (q.every(v => !v)) vacio("op-quejas", "Sin quejas esta semana");
+    else barras("op-quejas", ["No respeta parada", "Frecuencia", "Manejo imprudente", "No respeta semáforo", "Otros"],
+                [{label: "Quejas", data: q, backgroundColor: [C.rojo, C.jur, C.negro, C.amarillo, C.gris]}],
+                {indexAxis: "y", plugins: {legend: {display: false}}, scales: {x: {beginAtZero: true, ticks: {precision: 0}}}});
   },
   administracion() {
     const a = D.adm;
