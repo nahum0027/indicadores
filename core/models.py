@@ -82,14 +82,14 @@ class ReporteAdministracion(ReporteBase):
     bajas_renuncia = entero("Bajas por renuncia")
     bajas_despido = entero("Bajas por despido")
     bajas_abandono = entero("Bajas por abandono")
+    bajas_defuncion = entero("Bajas por defunción")
     bajas_otro = entero("Bajas por otro motivo")
     incap_enfermedad = entero("Incapacidades por enfermedad general")
     incap_riesgo = entero("Incapacidades por riesgo de trabajo")
     incap_maternidad = entero("Incapacidades por maternidad")
-    vac_operador = entero("Vacantes de operador")
-    vac_mecanico = entero("Vacantes de mecánico")
-    vac_administrativo = entero("Vacantes administrativas")
-    vac_otro = entero("Otras vacantes")
+    vac_ejecutivo = entero("Ejecutivo de transporte")
+    vac_administrativo = entero("Administrativo")
+    vac_honorarios = entero("Honorarios")
     vaca_adm_h = entero("Administración: hombres")
     vaca_adm_m = entero("Administración: mujeres")
     vaca_ops_h = entero("Operaciones: hombres")
@@ -103,7 +103,7 @@ class ReporteAdministracion(ReporteBase):
 
     @property
     def bajas(self):
-        return self.bajas_renuncia + self.bajas_despido + self.bajas_abandono + self.bajas_otro
+        return self.bajas_renuncia + self.bajas_despido + self.bajas_abandono + self.bajas_defuncion + self.bajas_otro
 
     @property
     def incapacidades(self):
@@ -111,7 +111,7 @@ class ReporteAdministracion(ReporteBase):
 
     @property
     def vacantes(self):
-        return self.vac_operador + self.vac_mecanico + self.vac_administrativo + self.vac_otro
+        return self.vac_ejecutivo + self.vac_administrativo + self.vac_honorarios
 
     @property
     def vacaciones(self):

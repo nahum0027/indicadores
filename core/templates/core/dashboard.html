@@ -219,14 +219,14 @@ const constructores = {
     barras("ad-movs", L, [{label: "Altas", data: a.altas, backgroundColor: C.adm},
                           {label: "Bajas", data: a.bajas, backgroundColor: C.rojo}],
            {scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
-    dona("ad-bajas", ["Renuncia", "Despido", "Abandono", "Otro"], a.bajas_motivos, [C.adm, C.rojo, C.jur, C.gris]);
+    dona("ad-bajas", ["Renuncia", "Despido", "Abandono", "Defunción", "Otro"], a.bajas_motivos, [C.adm, C.rojo, C.jur, C.negro, C.gris]);
     barras("ad-incap", L, [
       {label: "Enfermedad general", data: a.incap_enf, backgroundColor: C.adm, stack: "i"},
       {label: "Riesgo de trabajo", data: a.incap_riesgo, backgroundColor: C.rojo, stack: "i"},
       {label: "Maternidad", data: a.incap_mat, backgroundColor: C.admClaro, stack: "i"}],
       {scales: {x: {stacked: true}, y: {stacked: true, beginAtZero: true, ticks: {precision: 0}}}});
     if (!a.vacantes) vacio("ad-vac");
-    else barras("ad-vac", ["Operador", "Mecánico", "Administrativo", "Otro"],
+    else barras("ad-vac", ["Ejecutivo de transporte", "Administrativo", "Honorarios"],
                 [{label: "Vacantes", data: a.vacantes, backgroundColor: C.adm}],
                 {indexAxis: "y", plugins: {legend: {display: false}}, scales: {x: {beginAtZero: true, ticks: {precision: 0}}}});
     const v = a.vacaciones;

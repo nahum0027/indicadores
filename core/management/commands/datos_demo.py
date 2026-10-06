@@ -43,10 +43,9 @@ class Command(BaseCommand):
                 UnidadesRuta.objects.create(reporte=op, ruta=ruta, unidades=max(n, 0))
             ReporteAdministracion.objects.update_or_create(semana=s, defaults=dict(
                 plantilla_hombres=r.randint(520, 540), plantilla_mujeres=r.randint(85, 100), altas=r.randint(2, 9), bajas_renuncia=r.randint(1, 6),
-                bajas_despido=r.randint(0, 2), bajas_abandono=r.randint(0, 3), bajas_otro=r.randint(0, 1),
+                bajas_despido=r.randint(0, 2), bajas_abandono=r.randint(0, 3), bajas_defuncion=0, bajas_otro=r.randint(0, 1),
                 incap_enfermedad=r.randint(3, 10), incap_riesgo=r.randint(0, 3), incap_maternidad=r.randint(0, 1),
-                vac_operador=r.randint(8, 18), vac_mecanico=r.randint(0, 3),
-                vac_administrativo=r.randint(0, 2), vac_otro=r.randint(0, 2),
+                vac_ejecutivo=r.randint(8, 18), vac_administrativo=r.randint(0, 2), vac_honorarios=r.randint(0, 2),
                 vaca_adm_h=r.randint(1, 5), vaca_adm_m=r.randint(1, 6), vaca_ops_h=r.randint(8, 20), vaca_ops_m=r.randint(1, 6),
                 cap_en_curso=r.randint(10, 25), cap_liberados=r.randint(3, 10)))
             sin = r.randint(2, 9)
