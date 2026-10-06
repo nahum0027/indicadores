@@ -11,7 +11,7 @@ class RutaInline(admin.TabularInline):
 
 
 class BaseAdmin(admin.ModelAdmin):
-    list_display = ("semana", "capturado_por", "entregado", "tarde")
+    list_display = ("semana", "capturado_por", "entregado", "actualizado", "tarde")
     list_filter = ("tarde",)
     date_hierarchy = "semana"
 

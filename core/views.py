@@ -62,8 +62,6 @@ def capturar(request, area):
             obj.capturado_por = request.user
             if instancia is None:
                 obj.tarde = vencido
-            elif not request.user.is_staff:
-                obj.tarde = obj.tarde or vencido
             obj.save()
             if formset is not None:
                 formset.instance = obj
@@ -146,6 +144,8 @@ def dashboard(request):
         if r:
             estado, txt = ("tarde", "Entregó tarde") if r.tarde else ("ok", "Entregado")
             detalle = fecha_larga(r.entregado)
+            if (r.actualizado - r.entregado).total_seconds() > 60:
+                detalle += f" · corregido {fecha_larga(r.actualizado)}"
         else:
             estado, txt = ("vencido", "Sin entregar") if vencido else ("pendiente", "Pendiente")
             detalle = ""
