@@ -1,9 +1,11 @@
 <div class="kpis">
   {% for k in lista %}
-  <div class="kpi">
+  <div class="kpi{% if k.desglose %} ancho{% endif %}">
     <div class="t">{% if k.color %}<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:{{ k.color }};margin-right:6px"></span>{% endif %}{{ k.titulo }}</div>
     <div class="v">{{ k.valor }}</div>
-    <div class="d {{ k.tono }}">{% if k.delta %}{{ k.flecha }} {{ k.delta }} vs. semana anterior{% else %}&nbsp;{% endif %}</div>
+    {% if k.desglose %}<dl class="desglose">{% for etq, n in k.desglose %}<dt>{{ etq }}</dt><dd>{{ n }}</dd>{% endfor %}</dl>
+    {% elif k.nota %}<div class="d nota">{{ k.nota|linebreaksbr }}</div>
+    {% else %}<div class="d {{ k.tono }}">{% if k.delta %}{{ k.flecha }} {{ k.delta }} vs. semana anterior{% else %}&nbsp;{% endif %}</div>{% endif %}
   </div>
   {% endfor %}
 </div>

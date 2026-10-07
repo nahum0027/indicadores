@@ -43,6 +43,10 @@
 .kpi .t{font-size:14px;color:var(--tenue);line-height:1.25;min-height:2.5em}
 .kpi .v{font:700 34px/1.1 var(--cond);margin-top:4px;font-variant-numeric:tabular-nums}
 .kpi .d{font-size:14px;font-weight:500;margin-top:4px;color:var(--tenue)}
+.kpi .d.nota{color:var(--tinta)}
+.kpi.ancho{grid-column:span 2}
+.desglose{display:grid;grid-template-columns:1fr auto;gap:2px 14px;margin:6px 0 0;font-size:14px}
+.desglose dt{color:var(--tenue)} .desglose dd{margin:0;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
 .kpi .d.bien{color:var(--bien)} .kpi .d.mal{color:var(--mal)}
 .panel[data-area=operaciones] .kpis{border-top:4px solid var(--ops)}
 .panel[data-area=administracion] .kpis{border-top:4px solid var(--adm)}
@@ -102,7 +106,7 @@
   {% include "core/_kpis.html" with lista=kpis.operaciones %}
   <div class="graficas">
     <div class="g"><h3>Unidades activas y del plan operativo</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="op-unidades"></canvas></div></div>
-    <div class="g"><h3>Personal que se subió a rutas</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="op-personal"></canvas></div></div>
+    <div class="g"><h3>Personal de apoyo en rutas</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="op-personal"></canvas></div></div>
     <div class="g ancha"><h3>Combustible</h3><p>Litros de diésel por semana</p><div class="lienzo"><canvas id="op-combustible"></canvas></div></div>
     <div class="g ancha"><h3>Unidades por ruta</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="op-rutas"></canvas></div></div>
     <div class="g"><h3>Call Center</h3><p>Llamadas recibidas, atendidas y quejas, últimas 12 semanas</p><div class="lienzo"><canvas id="op-cc"></canvas></div></div>

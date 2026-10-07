@@ -48,6 +48,10 @@ class ReporteOperaciones(ReporteBase):
         verbose_name_plural = "reportes de Operaciones"
 
     @property
+    def pct_plan(self):
+        return pct(self.unidades_disponibles, self.unidades_plan)
+
+    @property
     def personal_rutas(self):
         return self.sup_rutas + self.coord_rutas + self.aux_rutas
 

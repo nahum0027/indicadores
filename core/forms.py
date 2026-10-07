@@ -26,7 +26,7 @@ class OperacionesForm(ReporteForm):
     secciones = [
         ("Unidades", "", ["unidades_disponibles", "unidades_plan"]),
         ("Combustible", "Total de lunes a viernes.", ["litros"]),
-        ("Personal que se subió a rutas", "", ["sup_rutas", "coord_rutas", "aux_rutas"]),
+        ("Personal de apoyo en rutas", "Personal de apoyo que se subió a rutas en la semana.", ["sup_rutas", "coord_rutas", "aux_rutas"]),
         ("Call Center", "", ["cc_recibidas", "cc_atendidas", "cc_quejas"]),
         ("Principales motivos de queja", "Cuántas de las quejas registradas fueron por cada motivo. El resto se cuenta como \"otros\".",
          ["q_parada", "q_frecuencia", "q_imprudente"]),

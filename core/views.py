@@ -90,19 +90,36 @@ FMT = {
 }
 
 
-def _kpi(titulo, actual, anterior, attr, fmt="int", sube_es_bueno=None, nota="", color=""):
+def _kpi(titulo, actual, anterior, attr, fmt="int", sube_es_bueno=None, nota="", color="", comparar=True, desglose=None):
     val = getattr(actual, attr) if actual else None
     ant = getattr(anterior, attr) if anterior else None
     f_val, f_delta = FMT[fmt]
     k = {"titulo": titulo, "valor": f_val(float(val)) if val is not None else "—",
-         "delta": None, "tono": "neutro", "nota": nota, "color": color}
-    if val is not None and ant is not None:
+         "delta": None, "tono": "neutro", "nota": nota, "color": color,
+         "desglose": desglose or []}
+    if comparar and val is not None and ant is not None:
         d = float(val) - float(ant)
         k["delta"] = "sin cambio" if d == 0 else f_delta(d)
         if d and sube_es_bueno is not None:
             k["tono"] = "bien" if (d > 0) == sube_es_bueno else "mal"
         k["flecha"] = "▲" if d > 0 else "▼" if d < 0 else ""
     return k
+
+
+FLOTA = getattr(settings, "INDICADORES_FLOTA_TOTAL", 400)  # total de unidades de la flota
+
+
+def _pct_flota(n):
+    return f"{n * 100 / FLOTA:.1f}%" if FLOTA else "—"
+
+
+def _nota_activas(op):
+    if not op:
+        return ""
+    lineas = [_pct_flota(op.unidades_disponibles)]
+    if op.pct_plan is not None:
+        lineas.append(f"{op.pct_plan:.1f}% del plan operativo")
+    return "\n".join(lineas)
 
 
 def _serie(objs, attr):
@@ -164,13 +181,16 @@ def dashboard(request):
 
     kpis = {
         "operaciones": [
-            _kpi("Unidades activas", op, op_prev, "unidades_disponibles", sube_es_bueno=True),
-            _kpi("Unidades en plan operativo", op, op_prev, "unidades_plan"),
-            _kpi("Litros de diésel", op, op_prev, "litros", sube_es_bueno=False),
-            _kpi("Personal en rutas", op, op_prev, "personal_rutas", sube_es_bueno=True),
-            _kpi("Llamadas recibidas", op, op_prev, "cc_recibidas"),
-            _kpi("% de llamadas atendidas", op, op_prev, "cc_atencion", "pct", True),
-            _kpi("Quejas", op, op_prev, "cc_quejas", sube_es_bueno=False),
+            _kpi("Unidades activas", op, op_prev, "unidades_disponibles", comparar=False, nota=_nota_activas(op)),
+            _kpi("Unidades en plan operativo", op, op_prev, "unidades_plan", comparar=False,
+                 nota=_pct_flota(op.unidades_plan) if op else ""),
+            _kpi("Litros de diésel", op, op_prev, "litros", comparar=False),
+            _kpi("Personal de apoyo en rutas", op, op_prev, "personal_rutas", comparar=False),
+            _kpi("Llamadas recibidas", op, op_prev, "cc_recibidas", comparar=False),
+            _kpi("% de llamadas atendidas", op, op_prev, "cc_atencion", "pct", comparar=False),
+            _kpi("Quejas", op, op_prev, "cc_quejas", comparar=False, desglose=[
+                ("No respeta parada", op.q_parada), ("Frecuencia", op.q_frecuencia),
+                ("Manejo imprudente", op.q_imprudente), ("Otros", op.quejas_otras)] if op else None),
         ],
         "administracion": [
             _kpi("Personal total", ad, ad_prev, "plantilla_total"),
