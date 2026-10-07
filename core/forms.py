@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 
 from .models import ReporteAdministracion, ReporteJuridico, ReporteOperaciones
 
@@ -34,6 +35,13 @@ class OperacionesForm(ReporteForm):
 
     class Meta(ReporteForm.Meta):
         model = ReporteOperaciones
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        meta = getattr(settings, "INDICADORES_PLAN_OPERATIVO", 335)
+        self.fields["unidades_plan"].help_text = (
+            f"Promedio diario de unidades que salieron a ruta de lunes a viernes (ej. 328.4). "
+            f"El plan operativo es de {meta} unidades.")
 
     def clean(self):
         datos = super().clean()

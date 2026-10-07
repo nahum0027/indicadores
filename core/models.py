@@ -31,10 +31,12 @@ class ReporteBase(models.Model):
 
 class ReporteOperaciones(ReporteBase):
     unidades_disponibles = entero("Unidades activas", "Unidades que salieron a ruta / en condiciones de operar")
-    unidades_plan = entero("Unidades en el plan operativo", "Unidades que salen según el plan operativo de la semana")
+    unidades_plan = models.DecimalField(
+        "Promedio de unidades que salieron", max_digits=6, decimal_places=1, default=0,
+        help_text="Promedio diario de unidades que salieron a ruta de lunes a viernes")
     litros = models.DecimalField("Litros de diésel", max_digits=12, decimal_places=2, default=0)
     sup_rutas = entero("Supervisores", "Supervisores que se subieron a rutas en la semana")
-    coord_rutas = entero("Coordinadores", "Coordinadores que se subieron a rutas en la semana")
+    coord_rutas = entero("Encargados", "Encargados que se subieron a rutas en la semana")
     aux_rutas = entero("Auxiliares", "Auxiliares que se subieron a rutas en la semana")
     cc_recibidas = entero("Llamadas recibidas")
     cc_atendidas = entero("Llamadas atendidas")
@@ -49,7 +51,9 @@ class ReporteOperaciones(ReporteBase):
 
     @property
     def pct_plan(self):
-        return pct(self.unidades_disponibles, self.unidades_plan)
+        """Promedio que salió contra lo que debería salir según el plan operativo."""
+        meta = getattr(settings, "INDICADORES_PLAN_OPERATIVO", 335)
+        return pct(self.unidades_plan, meta)
 
     @property
     def personal_rutas(self):

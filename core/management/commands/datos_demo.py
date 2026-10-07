@@ -26,11 +26,11 @@ class Command(BaseCommand):
         for i in range(inicio, 12):
             s = actual - timedelta(weeks=i)
             inhab = [r.randint(6, 14), r.randint(0, 4), r.randint(0, 3), r.randint(0, 2)]
-            disp = 180 - sum(inhab)
+            disp = 400 - sum(inhab) * 4
             prog = r.randint(5200, 5400)
             litros = r.randint(40000, 45000)
             op, _ = ReporteOperaciones.objects.update_or_create(semana=s, defaults=dict(
-                unidades_disponibles=disp, unidades_plan=r.randint(165, 172), litros=litros,
+                unidades_disponibles=disp, unidades_plan=round(r.uniform(318, 334), 1), litros=litros,
                 sup_rutas=r.randint(4, 12), coord_rutas=r.randint(1, 5), aux_rutas=r.randint(6, 18),
                 cc_recibidas=(rec := r.randint(380, 470)), cc_atendidas=int(rec * r.uniform(.86, .97)), cc_quejas=(qq := r.randint(8, 30)), q_parada=(q1 := r.randint(0, qq // 3)), q_frecuencia=(q2 := r.randint(0, qq // 3)),
                 q_imprudente=r.randint(0, (qq - q1 - q2) // 2),

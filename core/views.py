@@ -87,6 +87,7 @@ FMT = {
     "money": (lambda v: f"${v / 1e6:,.2f} M" if abs(v) >= 1e6 else f"${v:,.0f}",
               lambda d: f"{'+' if d >= 0 else '−'}${abs(d):,.0f}"),
     "dec": (lambda v: f"{v:,.2f}", lambda d: f"{d:+,.2f}"),
+    "dec1": (lambda v: f"{v:,.1f}", lambda d: f"{d:+,.1f}"),
 }
 
 
@@ -109,6 +110,9 @@ def _kpi(titulo, actual, anterior, attr, fmt="int", sube_es_bueno=None, nota="",
 FLOTA = getattr(settings, "INDICADORES_FLOTA_TOTAL", 400)  # total de unidades de la flota
 
 
+PLAN = getattr(settings, "INDICADORES_PLAN_OPERATIVO", 335)  # unidades que deberían salir
+
+
 def _pct_flota(n):
     return f"{n * 100 / FLOTA:.1f}%" if FLOTA else "—"
 
@@ -116,10 +120,7 @@ def _pct_flota(n):
 def _nota_activas(op):
     if not op:
         return ""
-    lineas = [_pct_flota(op.unidades_disponibles)]
-    if op.pct_plan is not None:
-        lineas.append(f"{op.pct_plan:.1f}% del plan operativo")
-    return "\n".join(lineas)
+    return f"{_pct_flota(op.unidades_disponibles)} de la flota ({FLOTA:,})"
 
 
 def _serie(objs, attr):
@@ -182,13 +183,13 @@ def dashboard(request):
     kpis = {
         "operaciones": [
             _kpi("Unidades activas", op, op_prev, "unidades_disponibles", comparar=False, nota=_nota_activas(op)),
-            _kpi("Unidades en plan operativo", op, op_prev, "unidades_plan", comparar=False,
-                 nota=_pct_flota(op.unidades_plan) if op else ""),
+            _kpi("Promedio de unidades que salieron", op, op_prev, "unidades_plan", "dec1", comparar=False,
+                 nota=f"{op.pct_plan:.1f}% del plan operativo ({PLAN:,})" if op else ""),
             _kpi("Litros de diésel", op, op_prev, "litros", comparar=False),
-            _kpi("Personal de apoyo en rutas", op, op_prev, "personal_rutas", comparar=False),
-            _kpi("Llamadas recibidas", op, op_prev, "cc_recibidas", comparar=False),
+            _kpi("Personal de apoyo en rutas", op, op_prev, "personal_rutas", comparar=False, desglose=[
+                ("Supervisores", op.sup_rutas), ("Encargados", op.coord_rutas), ("Auxiliares", op.aux_rutas)] if op else None),
             _kpi("% de llamadas atendidas", op, op_prev, "cc_atencion", "pct", comparar=False),
-            _kpi("Quejas", op, op_prev, "cc_quejas", comparar=False, desglose=[
+            _kpi("Llamadas recibidas", op, op_prev, "cc_recibidas", comparar=False, desglose=[
                 ("No respeta parada", op.q_parada), ("Frecuencia", op.q_frecuencia),
                 ("Manejo imprudente", op.q_imprudente), ("Otros", op.quejas_otras)] if op else None),
         ],
@@ -220,6 +221,7 @@ def dashboard(request):
 
     graficas = {
         "labels": [etiqueta_corta(s) for s in semanas],
+        "plan_meta": PLAN,
         "ops": {
             "disponibles": _serie(op_s, "unidades_disponibles"),
             "plan": _serie(op_s, "unidades_plan"),

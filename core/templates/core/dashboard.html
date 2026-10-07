@@ -105,7 +105,7 @@
 <section class="panel" id="panel-operaciones" data-area="operaciones" role="tabpanel" hidden>
   {% include "core/_kpis.html" with lista=kpis.operaciones %}
   <div class="graficas">
-    <div class="g"><h3>Unidades activas y del plan operativo</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="op-unidades"></canvas></div></div>
+    <div class="g"><h3>Unidades que salieron contra el plan operativo</h3><p>Promedio diario por semana, últimas 12 semanas</p><div class="lienzo"><canvas id="op-unidades"></canvas></div></div>
     <div class="g"><h3>Personal de apoyo en rutas</h3><p>Últimas 12 semanas</p><div class="lienzo"><canvas id="op-personal"></canvas></div></div>
     <div class="g ancha"><h3>Combustible</h3><p>Litros de diésel por semana</p><div class="lienzo"><canvas id="op-combustible"></canvas></div></div>
     <div class="g ancha"><h3>Unidades por ruta</h3><p>Semana seleccionada</p><div class="lienzo"><canvas id="op-rutas"></canvas></div></div>
@@ -190,12 +190,14 @@ const pct = {scales: {y: {suggestedMax: 100, ticks: {callback: v => v + "%"}}},
 const constructores = {
   operaciones() {
     const o = D.ops;
-    barras("op-unidades", L, [{label: "Activas", data: o.disponibles, backgroundColor: C.ops},
-                              {label: "Plan operativo", data: o.plan, backgroundColor: C.opsClaro}],
-           {scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
+    new Chart(document.getElementById("op-unidades"), {data: {labels: L, datasets: [
+      {type: "line", order: 0, label: `Plan operativo (${D.plan_meta})`, data: L.map(() => D.plan_meta),
+       borderColor: C.negro, borderDash: [6, 4], borderWidth: 2, pointRadius: 0},
+      {type: "bar", order: 1, label: "Promedio que salió", data: o.plan, backgroundColor: C.ops}]},
+      options: {scales: {y: {beginAtZero: true, ticks: {precision: 0}}}}});
     barras("op-personal", L, [
       {label: "Supervisores", data: o.sup, backgroundColor: C.ops, stack: "p"},
-      {label: "Coordinadores", data: o.coord, backgroundColor: C.azul, stack: "p"},
+      {label: "Encargados", data: o.coord, backgroundColor: C.azul, stack: "p"},
       {label: "Auxiliares", data: o.aux, backgroundColor: C.opsClaro, stack: "p"}],
       {scales: {x: {stacked: true}, y: {stacked: true, beginAtZero: true, ticks: {precision: 0}}}});
     barras("op-combustible", L, [{label: "Litros", data: o.litros, backgroundColor: C.opsClaro}],
