@@ -210,7 +210,7 @@ def dashboard(request):
             _kpi("Siniestros", ju, ju_prev, "siniestros", sube_es_bueno=False),
             _kpi("Siniestros responsable", ju, ju_prev, "sin_responsable", sube_es_bueno=False),
             _kpi("Siniestros no responsable", ju, ju_prev, "sin_no_responsable"),
-            _kpi("Siniestros no dimensionales", ju, ju_prev, "sin_no_dimensional"),
+            _kpi("Siniestros no dimensionar", ju, ju_prev, "sin_no_dimensional"),
             _kpi("Personas lesionadas", ju, ju_prev, "lesionados", sube_es_bueno=False),
             _kpi("Código verde", ju, ju_prev, "les_verde", sube_es_bueno=False, color="#2E9E5B"),
             _kpi("Código amarillo", ju, ju_prev, "les_amarillo", sube_es_bueno=False, color="#E2B400"),

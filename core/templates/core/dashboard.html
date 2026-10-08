@@ -257,11 +257,11 @@ const constructores = {
     else barras("ju-les", ["Verde", "Amarillo", "Rojo", "Negro"],
                 [{label: "Personas", data: j.lesionados, backgroundColor: [C.verde, C.amarillo, C.rojo, C.negro]}],
                 {plugins: {legend: {display: false}}, scales: {y: {beginAtZero: true, ticks: {precision: 0}}}});
-      dona("ju-resp", ["Responsable", "No responsable", "No dimensional"], j.resp, [C.rojo, C.ops, C.gris]);
+      dona("ju-resp", ["Responsable", "No responsable", "No dimensionar"], j.resp, [C.rojo, C.ops, C.gris]);
     barras("ju-sin", L, [
       {label: "Responsable", data: j.sin_resp, backgroundColor: C.rojo, stack: "s"},
       {label: "No responsable", data: j.sin_no_resp, backgroundColor: C.ops, stack: "s"},
-      {label: "No dimensional", data: j.sin_no_dim, backgroundColor: C.gris, stack: "s"}],
+      {label: "No dimensionar", data: j.sin_no_dim, backgroundColor: C.gris, stack: "s"}],
       {scales: {x: {stacked: true}, y: {stacked: true, beginAtZero: true, ticks: {precision: 0}}}});
     linea("ju-les-serie", [{label: "Personas lesionadas", data: j.lesionados_serie, color: C.rojo},
                            {label: "Activaciones de póliza", data: j.polizas, color: C.negro}],

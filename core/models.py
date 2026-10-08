@@ -136,7 +136,7 @@ class ReporteJuridico(ReporteBase):
     aud_juzgados = entero("Juzgados Laborales del Estado de Qro.")
     sin_responsable = entero("Responsable", "Siniestros en los que la empresa resultó responsable")
     sin_no_responsable = entero("No responsable", "Siniestros en los que la empresa no resultó responsable")
-    sin_no_dimensional = entero("No dimensional", "Siniestros no dimensionales")
+    sin_no_dimensional = entero("No dimensionar", "Siniestros no dimensionar")
     les_verde = entero("Código verde", "Lesiones leves")
     les_amarillo = entero("Código amarillo", "Lesiones moderadas")
     les_rojo = entero("Código rojo", "Lesiones graves")
