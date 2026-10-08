@@ -136,6 +136,7 @@ class ReporteJuridico(ReporteBase):
     aud_juzgados = entero("Juzgados Laborales del Estado de Qro.")
     sin_responsable = entero("Responsable", "Siniestros en los que la empresa resultó responsable")
     sin_no_responsable = entero("No responsable", "Siniestros en los que la empresa no resultó responsable")
+    sin_no_dimensional = entero("No dimensional", "Siniestros no dimensionales")
     les_verde = entero("Código verde", "Lesiones leves")
     les_amarillo = entero("Código amarillo", "Lesiones moderadas")
     les_rojo = entero("Código rojo", "Lesiones graves")
@@ -148,7 +149,7 @@ class ReporteJuridico(ReporteBase):
 
     @property
     def audiencias(self):
-        return self.aud_ccl + self.aud_tca + self.aud_juzgados
+        return self.sin_responsable + self.sin_no_responsable + self.sin_no_dimensional
 
     @property
     def siniestros(self):

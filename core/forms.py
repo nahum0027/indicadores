@@ -73,7 +73,7 @@ class JuridicoForm(ReporteForm):
     secciones = [
         ("Audiencias", "Audiencias atendidas de lunes a domingo, por instancia.", ["aud_ccl", "aud_tca", "aud_juzgados"]),
         ("Siniestros", "Siniestros de lunes a domingo, según la responsabilidad de la empresa.",
-         ["sin_responsable", "sin_no_responsable"]),
+         ["sin_responsable", "sin_no_responsable", "sin_no_dimensional"]),
         ("Personas lesionadas por código", "Personas lesionadas en los siniestros de la semana.",
          ["les_verde", "les_amarillo", "les_rojo", "les_negro"]),
         ("Pólizas", "", ["polizas_activadas"]),
