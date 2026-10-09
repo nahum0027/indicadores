@@ -194,7 +194,7 @@ def dashboard(request):
                 ("Manejo imprudente", op.q_imprudente), ("Otros", op.quejas_otras)] if op else None),
         ],
         "administracion": [
-            _kpi("Personal total", ad, ad_prev, "plantilla_total"),
+            _kpi("Personal contratado", ad, ad_prev, "plantilla_total"),
             _kpi("Hombres", ad, ad_prev, "plantilla_hombres"),
             _kpi("Mujeres", ad, ad_prev, "plantilla_mujeres"),
             _kpi("Altas", ad, ad_prev, "altas"),

@@ -56,7 +56,7 @@ class OperacionesForm(ReporteForm):
 
 class AdministracionForm(ReporteForm):
     secciones = [
-        ("Personal", "Personas en plantilla al cierre de la semana.", ["plantilla_hombres", "plantilla_mujeres"]),
+        ("Personal contratado", "Personas contratadas al cierre de la semana.", ["plantilla_hombres", "plantilla_mujeres"]),
         ("Altas y bajas", "", ["altas", "bajas_renuncia", "bajas_despido", "bajas_abandono", "bajas_defuncion", "bajas_otro"]),
         ("Incapacidades", "Número de incapacidades iniciadas en la semana.",
          ["incap_enfermedad", "incap_riesgo", "incap_maternidad"]),
