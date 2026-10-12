@@ -160,13 +160,10 @@ def dashboard(request):
     for slug, cfg in AREAS.items():
         r = d[slug]["actual"]
         if r:
-            estado, txt = ("tarde", "Entregó tarde") if r.tarde else ("ok", "Entregado")
-            detalle = fecha_larga(r.entregado)
-            if (r.actualizado - r.entregado).total_seconds() > 60:
-                detalle += f" · corregido {fecha_larga(r.actualizado)}"
+            estado, txt = "ok", "Entregado"
         else:
-            estado, txt = ("vencido", "Sin entregar") if vencido else ("pendiente", "Pendiente")
-            detalle = ""
+            estado, txt = ("vencido", "No entregó") if vencido else ("pendiente", "Pendiente")
+        detalle = ""
         entregas.append({"slug": slug, "nombre": cfg["nombre"], "responsable": cfg["responsable"], "estado": estado, "txt": txt, "detalle": detalle})
 
     restante = None
