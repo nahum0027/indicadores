@@ -207,7 +207,6 @@ def dashboard(request):
             _kpi("Siniestros", ju, ju_prev, "siniestros", sube_es_bueno=False),
             _kpi("Siniestros responsable", ju, ju_prev, "sin_responsable", sube_es_bueno=False),
             _kpi("Siniestros no responsable", ju, ju_prev, "sin_no_responsable"),
-            _kpi("Siniestros no dimensionar", ju, ju_prev, "sin_no_dimensional"),
             _kpi("Personas lesionadas", ju, ju_prev, "lesionados", sube_es_bueno=False),
             _kpi("Código verde", ju, ju_prev, "les_verde", sube_es_bueno=False, color="#2E9E5B"),
             _kpi("Código amarillo", ju, ju_prev, "les_amarillo", sube_es_bueno=False, color="#E2B400"),
@@ -255,7 +254,7 @@ def dashboard(request):
             "sin_no_dim": _serie(ju_s, "sin_no_dimensional"),
             "lesionados_serie": _serie(ju_s, "lesionados"),
             "polizas": _serie(ju_s, "polizas_activadas"),
-            "resp": _actual(ju, ["sin_responsable", "sin_no_responsable", "sin_no_dimensional"]),
+             "resp": _actual(ju, ["sin_responsable", "sin_no_responsable"]),
             "lesionados": _actual(ju, ["les_verde", "les_amarillo", "les_rojo", "les_negro"]),
         },
     }
