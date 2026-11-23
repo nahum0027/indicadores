@@ -251,10 +251,9 @@ def dashboard(request):
             "juz": _serie(ju_s, "aud_juzgados"),
             "sin_resp": _serie(ju_s, "sin_responsable"),
             "sin_no_resp": _serie(ju_s, "sin_no_responsable"),
-            "sin_no_dim": _serie(ju_s, "sin_no_dimensional"),
             "lesionados_serie": _serie(ju_s, "lesionados"),
             "polizas": _serie(ju_s, "polizas_activadas"),
-             "resp": _actual(ju, ["sin_responsable", "sin_no_responsable"]),
+            "resp": _actual(ju, ["sin_responsable", "sin_no_responsable"]),
             "lesionados": _actual(ju, ["les_verde", "les_amarillo", "les_rojo", "les_negro"]),
         },
     }

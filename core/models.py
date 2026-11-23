@@ -149,7 +149,7 @@ class ReporteJuridico(ReporteBase):
 
     @property
     def audiencias(self):
-        return self.sin_responsable + self.sin_no_responsable + self.sin_no_dimensional
+        return self.aud_ccl + self.aud_tca + self.aud_juzgados
 
     @property
     def siniestros(self):
