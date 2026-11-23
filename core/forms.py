@@ -12,6 +12,11 @@ class ReporteForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Solo se piden los campos que aparecen en las secciones; los demás se conservan como están en la base.
+        visibles = {c for _, _, campos in self.secciones for c in campos}
+        for nombre in list(self.fields):
+            if nombre not in visibles:
+                del self.fields[nombre]
         nuevo = not self.instance.pk and not self.is_bound
         for nombre, campo in self.fields.items():
             campo.required = True
